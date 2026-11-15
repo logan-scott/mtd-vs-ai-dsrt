@@ -1,0 +1,184 @@
+{
+  "columns": [
+    {
+      "name": "trial_id",
+      "type": "str"
+    },
+    {
+      "name": "condition",
+      "type": "str"
+    },
+    {
+      "name": "technique",
+      "type": "str"
+    },
+    {
+      "name": "attempt_index",
+      "type": "int"
+    },
+    {
+      "name": "sequence_id",
+      "type": "str"
+    },
+    {
+      "name": "block_id",
+      "type": "str"
+    },
+    {
+      "name": "randomization_seed",
+      "type": "int"
+    },
+    {
+      "name": "start_timestamp",
+      "type": "str"
+    },
+    {
+      "name": "end_timestamp",
+      "type": "str"
+    },
+    {
+      "name": "attacker_model_id",
+      "type": "str"
+    },
+    {
+      "name": "attacker_model_version",
+      "type": "str"
+    },
+    {
+      "name": "temperature",
+      "type": "float"
+    },
+    {
+      "name": "context_window",
+      "type": "int"
+    },
+    {
+      "name": "system_prompt_hash",
+      "type": "str"
+    },
+    {
+      "name": "max_actions",
+      "type": "int"
+    },
+    {
+      "name": "trial_duration_limit_s",
+      "type": "int"
+    },
+    {
+      "name": "vuln_profile_version",
+      "type": "str"
+    },
+    {
+      "name": "testbed_config_checksum",
+      "type": "str"
+    },
+    {
+      "name": "tooling_versions",
+      "type": "str"
+    },
+    {
+      "name": "mtd_cadence_s",
+      "type": "int"
+    },
+    {
+      "name": "monitoring_interval_s",
+      "type": "int"
+    },
+    {
+      "name": "exploit_success",
+      "type": "int"
+    },
+    {
+      "name": "exploitation_success",
+      "type": "int"
+    },
+    {
+      "name": "obj_a",
+      "type": "int"
+    },
+    {
+      "name": "obj_b",
+      "type": "int"
+    },
+    {
+      "name": "obj_c",
+      "type": "int"
+    },
+    {
+      "name": "objective_count",
+      "type": "int"
+    },
+    {
+      "name": "time_to_compromise_s",
+      "type": "float | None"
+    },
+    {
+      "name": "ttc_censored",
+      "type": "int"
+    },
+    {
+      "name": "time_to_enumeration_s",
+      "type": "float | None"
+    },
+    {
+      "name": "tten_censored",
+      "type": "int"
+    },
+    {
+      "name": "time_to_first_valid_exploit_s",
+      "type": "float | None"
+    },
+    {
+      "name": "tfve_censored",
+      "type": "int"
+    },
+    {
+      "name": "recon_accuracy_f1",
+      "type": "float | None"
+    },
+    {
+      "name": "attack_path_churn",
+      "type": "float | None"
+    },
+    {
+      "name": "attempts_per_success",
+      "type": "int | None"
+    },
+    {
+      "name": "aps_censored",
+      "type": "int"
+    },
+    {
+      "name": "latency_overhead_ms",
+      "type": "float | None"
+    },
+    {
+      "name": "cpu_overhead_pct",
+      "type": "float | None"
+    },
+    {
+      "name": "memory_overhead_pct",
+      "type": "float | None"
+    },
+    {
+      "name": "network_overhead_pct",
+      "type": "float | None"
+    },
+    {
+      "name": "operational_event_volume",
+      "type": "int"
+    },
+    {
+      "name": "service_availability_impact",
+      "type": "float | None"
+    },
+    {
+      "name": "excluded",
+      "type": "int"
+    },
+    {
+      "name": "exclusion_reason",
+      "type": "str"
+    }
+  ]
+}

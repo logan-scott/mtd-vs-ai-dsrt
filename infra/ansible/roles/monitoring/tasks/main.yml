@@ -1,0 +1,28 @@
+---
+# Monitoring agents (CPU/memory/network sampling at monitoring_interval_s) plus
+# the measurement data store. Also serves as the internal artifact mirror for the
+# egress-free nodes (apt mirror + Docker registry + Python wheels).
+
+- name: Install monitoring + data-store packages
+  ansible.builtin.apt:
+    name:
+      - prometheus-node-exporter
+      - python3
+      - python3-venv
+      - sqlite3
+    state: present
+    update_cache: true
+
+- name: Ensure node-exporter is running (utilization sampling)
+  ansible.builtin.service:
+    name: prometheus-node-exporter
+    state: started
+    enabled: true
+
+- name: Create the measurement data directory (access-controlled)
+  ansible.builtin.file:
+    path: /var/lib/mtd-instrument/data
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"

@@ -1,0 +1,13 @@
+---
+# ZERO-EGRESS ALTERNATIVE (provided, not required) — stand up the internal mirror.
+#
+# Run this BEFORE site.yml when using `cli.py deploy --mode mirror`, so the testbed
+# nodes install packages/images/wheels from the monitoring node and never need any
+# egress (not even the temporary provisioning window the default `--mode egress`
+# uses). See roles/mirror/tasks/main.yml for the one-time population steps.
+
+- name: Internal artifact mirror (registry + apt-mirror + wheel index)
+  hosts: monitoring
+  become: true
+  roles:
+    - role: mirror

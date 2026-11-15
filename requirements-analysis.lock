@@ -1,0 +1,75 @@
+# Pinned analysis stack for the confirmatory analysis (pip freeze, macOS/CPython 3.13.0).
+#
+# WHY THIS FILE EXISTS: the mixed-model layer is version-sensitive on rank-deficient
+# designs. The archived docs/results/full_20260722/analysis_report.json was produced on
+# the live control host under an UNRECORDED stack, where statsmodels raised
+# "LinAlgError: Singular matrix" on three RQ2 outcomes; under the pinned stack below the
+# same code on the same CSV converges to a boundary solution instead. Every report written
+# by cli.py records provenance.library_versions and whether it matches these pins
+# (provenance.stack_matches_lock), so a divergent number can always be attributed.
+#
+# Regenerate with:  .venv/bin/python -m pip freeze --exclude-editable > /tmp/pins.txt
+#                   keep the comment header above and append /tmp/pins.txt below it.
+#                   (Redirecting pip freeze straight into this file would destroy the
+#                   header, which is the only place the rationale is recorded.)
+annotated-types==0.7.0
+anthropic==0.116.0
+anyio==4.14.1
+autograd==1.9.1
+autograd-gamma==0.5.0
+black==26.5.1
+certifi==2026.6.17
+click==8.4.2
+contourpy==1.3.3
+cycler==0.12.1
+distro==1.9.0
+docstring_parser==0.18.0
+fonttools==4.63.0
+formulaic==1.2.2
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+idna==3.18
+iniconfig==2.3.0
+interface_meta==2.0.1
+jiter==0.16.0
+joblib==1.5.3
+kiwisolver==1.5.0
+lifelines==0.30.3
+matplotlib==3.11.0
+mypy_extensions==1.1.0
+narwhals==2.23.0
+numpy==2.5.1
+packaging==26.2
+pandas==2.3.3
+pandas-flavor==0.8.1
+pathspec==1.1.1
+patsy==1.0.2
+pillow==12.3.0
+pingouin==0.6.1
+platformdirs==4.10.0
+pluggy==1.6.0
+pydantic==2.13.4
+pydantic_core==2.46.4
+Pygments==2.20.0
+pyparsing==3.3.2
+pytest==9.1.1
+python-dateutil==2.9.0.post0
+pytokens==0.4.1
+pytz==2026.2
+PyYAML==6.0.3
+ruff==0.15.21
+scikit-learn==1.9.0
+scikit-posthocs==0.14.0
+scipy==1.18.0
+seaborn==0.13.2
+six==1.17.0
+sniffio==1.3.1
+statsmodels==0.14.6
+tabulate==0.10.0
+threadpoolctl==3.6.0
+typing-inspection==0.4.2
+typing_extensions==4.16.0
+tzdata==2026.3
+wrapt==2.3.0rc1
+xarray==2026.7.0

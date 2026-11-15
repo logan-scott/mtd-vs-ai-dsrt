@@ -1,0 +1,111 @@
+# =============================================================================
+# Standardized vulnerable-target set + deception responder (version-pinned).
+# =============================================================================
+# All services run as Docker containers on the isolated `targets` node
+# (172.31.66.10, vmbr9, NO egress). Images are PRE-STAGED (docker load from
+# pre-pulled tarballs) because the node has no internet access. Published host
+# ports match the observable ports in testbed/profile.py + testbed/roster.yaml so
+# the live scan's canonical naming matches the ground-truth inventory.
+#
+# DIGEST-PINNED, VALIDATED image set (vuln_profile_version vp-0.2.0). Each `image:`
+# is pinned by @sha256:<manifest-list-digest> for reproducibility; the human-readable
+# tag is kept before the digest. Re-verify/refresh the digests on the testbed with
+# scripts/pin_images.sh after a pull. (These replaced an earlier set of fictional
+# tags that did not exist in any registry.)
+#
+# Genuine service -> observable (service_name, port, endpoint) -> weakness:
+#   dvwa     http-dvwa    80   /login.php               OS command injection  (obj_b)
+#   juice    http-juice   3000 /rest/products           SQLi over REST         (obj_b)
+#   webgoat  http-webgoat 8080 /WebGoat/login           XXE                    (obj_b)
+#   struts   http-struts  8081 /struts2/index.action    CVE-2017-5638 RCE      (obj_b)
+#   vsftpd   ftp-vsftpd   21   -                        CVE-2011-2523 backdoor (obj_b)
+#
+# Decoys are carried by ALL SIX conditions, not just the deception ones:
+# `testbed/profile.py::default_profile` seeds http-admin/ssh-gateway/ftp-backup
+# unconditionally and no technique removes them, so this container is deployed and
+# published in every arm. Only `deceptive_presentation` and `combined_mtd_deception`
+# ROTATE the decoys; the other four — `static_baseline` included — present the same
+# three decoys unchanged for the whole run. `static_baseline` is therefore STATIC
+# DECEPTION, not a no-deception control.
+# They are served by ONE deterministic responder we fully control (open-item T2:
+# RESOLVED). It presents plausible-but-false services
+# with fixed fake banners; decoys are flagged genuine=false in ground truth so
+# recon precision penalizes "discovering" them. NB: the fake SSH decoy binds :22,
+# so the targets node's administrative sshd is moved to :2222 (see the targets role
+# and inventory.example.ini). Nothing here reaches off 172.31.66.0/24.
+
+services:
+  dvwa:
+    image: vulnerables/web-dvwa@sha256:dae203fe11646a86937bf04db0079adef295f426da68a92b40e3b181f337daa7
+    restart: unless-stopped
+    ports: ["172.31.66.10:80:80"]
+    networks: [testbed]
+
+  juice:
+    image: bkimminich/juice-shop:v17.1.1@sha256:9e437b456e444ff001d1663e4f6f05c796fe02f1058dd2651d6791a15b43dfeb
+    restart: unless-stopped
+    ports: ["172.31.66.10:3000:3000"]
+    networks: [testbed]
+
+  webgoat:
+    image: webgoat/webgoat:v2023.8@sha256:01672eb9aeba60d042ae1131d6de683b98fa64e9da60fa5d3daad2642a6795dd
+    restart: unless-stopped
+    ports: ["172.31.66.10:8080:8080"]
+    networks: [testbed]
+
+  struts:
+    # Apache Struts2 S2-045 (CVE-2017-5638); container serves on 8080 -> published 8081.
+    image: piesecurity/apache-struts2-cve-2017-5638@sha256:381a90208031e7910555c99e7a88183389f5d159dcd118c2b98fd8ce196ab79e
+    restart: unless-stopped
+    ports: ["172.31.66.10:8081:8080"]
+    networks: [testbed]
+
+  vsftpd:
+    # Single-service vsftpd 2.3.4 backdoor (CVE-2011-2523), built offline from the vulhub
+    # CVE-2011-2523 context and docker-load'd (see vsftpd-backdoor/build.sh), like the
+    # deception responder. Replaces tleemcjr/metasploitable2 (a full-system image that
+    # crash-loops under plain `docker compose` and does not serve vsftpd cleanly on :21).
+    # Publishes 21 (FTP) and 6200 (the root shell the ":)" backdoor opens — the
+    # vsftpd_backdoor primitive triggers on 21 then reaches the shell on 6200 for obj_b).
+    # BOTH are republished by render_override.py on every reconfigure: 21 is the OBSERVABLE
+    # port and rotates under port_rotation / combined_mtd_deception; 6200 is an AUXILIARY
+    # port (testbed/roster.yaml `auxiliary_ports`), fixed and never rotated, because it is a
+    # property of the CVE rather than a binding. `ports:` is emitted with the !override merge
+    # tag, which REPLACES this list — so a render that emitted only the observable mapping
+    # silently un-published 6200 and made this target reachable but un-compromisable in every
+    # condition. See docs/metrics_specification.md §4d.
+    image: mtd-testbed/vsftpd-backdoor:0.1.0
+    restart: unless-stopped
+    ports:
+      - "172.31.66.10:21:21"
+      - "172.31.66.10:6200:6200"
+    networks: [testbed]
+
+  decoys:
+    # Custom deterministic deception responder (we control the banners). Presents
+    # http-admin:8090, ssh-gateway:22, ftp-backup:2121 with fixed fake banners.
+    # Reads /etc/responder/responder.yml (staged by the targets role); reconfigure.sh
+    # rewrites it and signals SIGHUP so deceptive_presentation can rotate banners/endpoints.
+    # The ports below are the INITIAL publication only: render_override.py emits a `decoys:`
+    # entry with `ports: !override [...]` that REPLACES this list with the in-force (rotated)
+    # decoy ports, so deceptive_presentation / combined_mtd_deception port rotation is
+    # realized on the wire. All three decoys share this one container, hence one entry with
+    # three mappings.
+    image: mtd-testbed/deception-responder:0.1.0 # PIN: @sha256:<digest> (built offline)
+    restart: unless-stopped
+    ports:
+      - "172.31.66.10:8090:8090"
+      - "172.31.66.10:22:22"
+      - "172.31.66.10:2121:2121"
+    volumes:
+      - /opt/testbed/responder:/etc/responder:ro
+    networks: [testbed]
+
+networks:
+  testbed:
+    driver: bridge
+    # NOT `internal: true`: an internal network has no host gateway, which blocks Docker
+    # host-port publishing — so every service became unreachable (empty scan, refused
+    # decoy :22). Egress is already prevented structurally (the vmbr9 node has no default
+    # route / gateway off the testbed) and enforced by the fail-closed isolation preflight,
+    # so the container bridge does not need `internal: true`.

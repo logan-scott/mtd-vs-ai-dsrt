@@ -1,0 +1,25 @@
+# Deterministic deception responder — decoy banner map (we fully control these).
+# Presents plausible-but-false services so the attacker's recon precision is
+# penalized for "discovering" them. Genuine services are NEVER served here; these
+# decoys expose no real vulnerability (a delivered primitive can reach but never
+# gain access — matching the offline decoy outcome). Ports/endpoints here mirror
+# the decoy entries in testbed/roster.yaml + testbed/profile.py. reconfigure.yml
+# re-renders this file (rotating port/endpoint) for deceptive_presentation.
+
+decoys:
+  - service_name: http-admin
+    proto: http
+    port: 8090
+    endpoint: /admin
+    banner: "Server: nginx/1.18.0 (admin-console)"
+    body: "<html><title>Admin Console</title><body>401 Unauthorized</body></html>"
+
+  - service_name: ssh-gateway
+    proto: ssh
+    port: 22
+    banner: "SSH-2.0-OpenSSH_8.9p1 gateway"
+
+  - service_name: ftp-backup
+    proto: ftp
+    port: 2121
+    banner: "220 backup-ftp ready (vsFTPd 3.0.5)"

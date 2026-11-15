@@ -1,0 +1,161 @@
+---
+# Stand up the standardized, version-pinned vulnerable targets as Docker
+# containers. Images are pre-staged (no egress) — see infra/README.md. The exact
+# pinned set is documented in testbed/vulnerability_profile/README.md and recorded
+# as vuln_profile_version.
+
+- name: Install Docker engine + compose v2 plugin
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      # docker-compose-plugin is not in the Ubuntu repos; docker-compose-v2 is.
+      - docker-compose-v2
+    state: present
+    update_cache: true
+
+- name: Ensure Docker is running
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Create the vulnerability-profile compose directory
+  ansible.builtin.file:
+    path: /opt/testbed
+    state: directory
+    mode: "0755"
+
+- name: Create the deception-responder config directory
+  ansible.builtin.file:
+    path: /opt/testbed/responder
+    state: directory
+    mode: "0755"
+
+- name: Create the reconfigure state directory
+  ansible.builtin.file:
+    path: /opt/testbed/state
+    state: directory
+    mode: "0755"
+  # reconfigure.yml writes /opt/testbed/state/desired-*.json here BEFORE reconfigure.sh
+  # runs, so the directory must exist from deploy time (not created lazily).
+
+# NOTE: the admin sshd is moved to :2222 (freeing :22 for the SSH decoy) by the
+# bootstrap play in site.yml, which runs before this role and handles the first-run
+# port switch. This role always connects on :2222.
+
+- name: Deploy the pinned vulnerable-target + decoy compose file
+  ansible.builtin.copy:
+    src: files/docker-compose.targets.yml
+    dest: /opt/testbed/docker-compose.yml
+    mode: "0644"
+  # NOTE: the compose file pins DVWA / Juice Shop / WebGoat / Vulhub(Struts2) /
+  # Metasploitable-class images + the deception responder by digest; images must
+  # already be present locally (docker load) because the node has no internet access.
+
+- name: Deploy the deception-responder banner map
+  ansible.builtin.copy:
+    src: files/responder.yml
+    dest: /opt/testbed/responder/responder.yml
+    mode: "0644"
+
+- name: Stage the idempotent per-attempt reconfiguration script
+  ansible.builtin.copy:
+    src: files/reconfigure.sh
+    dest: /opt/testbed/reconfigure.sh
+    mode: "0755"
+  # Driven by infra/ansible/reconfigure.yml (called once per attempt by the harness
+  # AnsibleProvisioner) to apply the in-force MTD condition idempotently.
+
+- name: Stage the compose-override renderer (used by reconfigure.sh)
+  ansible.builtin.copy:
+    src: files/render_override.py
+    dest: /opt/testbed/render_override.py
+    mode: "0755"
+
+# The deception responder is OUR image (not on any registry), so it is always staged
+# as a docker-load tarball built offline on the control host (see build.sh), in both
+# provisioning modes. Staged into files/ by the deploy flow (like files/instrument).
+- name: Create the staged-image directory
+  ansible.builtin.file:
+    path: /opt/testbed/images
+    state: directory
+    mode: "0755"
+
+- name: Stage the deception-responder image tarball
+  ansible.builtin.copy:
+    src: files/deception-responder/images/deception-responder-0.1.0.tar
+    dest: /opt/testbed/images/deception-responder-0.1.0.tar
+    mode: "0644"
+
+- name: Load the deception-responder image
+  ansible.builtin.command:
+    cmd: docker load -i /opt/testbed/images/deception-responder-0.1.0.tar
+  register: responder_load
+  changed_when: "'Loaded image' in responder_load.stdout"
+
+# The vsftpd 2.3.4 backdoor target is also OUR image (built offline from the vulhub
+# CVE-2011-2523 context — see vsftpd-backdoor/build.sh), staged + loaded like the responder.
+- name: Stage the vsftpd-backdoor image tarball
+  ansible.builtin.copy:
+    src: files/vsftpd-backdoor/images/vsftpd-backdoor-0.1.0.tar
+    dest: /opt/testbed/images/vsftpd-backdoor-0.1.0.tar
+    mode: "0644"
+
+- name: Load the vsftpd-backdoor image
+  ansible.builtin.command:
+    cmd: docker load -i /opt/testbed/images/vsftpd-backdoor-0.1.0.tar
+  register: vsftpd_load
+  changed_when: "'Loaded image' in vsftpd_load.stdout"
+
+# Validate + pull each target image up front so a bad/unreachable reference fails
+# LOUDLY with the offending name here, not deep inside `compose up`. The image list
+# is the compose file itself (source of truth); our locally-built mtd-testbed/ images
+# (responder, vsftpd-backdoor) are skipped (they are docker-load'd, not pullable). In
+# temporary-egress mode this pulls from the internet; in mirror mode from the mirror.
+- name: List the target images from the compose (source of truth)
+  ansible.builtin.command:
+    cmd: docker compose -f /opt/testbed/docker-compose.yml config --images
+  register: compose_images
+  changed_when: false
+
+- name: Validate + pull each target image (fails loudly on a bad reference)
+  ansible.builtin.command:
+    cmd: "docker pull {{ item }}"
+  loop: "{{ compose_images.stdout_lines }}"
+  when: "'mtd-testbed/' not in item"
+  register: image_pull
+  changed_when: "'Downloaded newer image' in image_pull.stdout or 'Pull complete' in image_pull.stdout"
+
+- name: Bring up the vulnerable targets + decoys
+  ansible.builtin.command:
+    cmd: docker compose -f /opt/testbed/docker-compose.yml up -d
+  register: compose_up
+  changed_when: "'Started' in compose_up.stderr or 'Created' in compose_up.stderr"
+
+# DVWA ships with an EMPTY database and its modules 302-redirect to /login.php until the DB is
+# created ("Setup / Reset Database" on setup.php — DVWA's documented one-time provisioning step,
+# NOT part of the attack). Do it here so the dvwa_cmd_injection primitive can authenticate and
+# reach the Command Injection module. Retried because MySQL inside the container takes a few
+# seconds to accept connections after `up -d`. Idempotent: re-creating/resetting is safe.
+- name: Initialize the DVWA training database (setup.php Create / Reset Database)
+  ansible.builtin.shell: |
+    set -euo pipefail
+    base="http://172.31.66.10:80"
+    jar="$(mktemp)"; trap 'rm -f "$jar"' EXIT
+    tok="$(curl -s -m 15 -c "$jar" "$base/setup.php" \
+      | grep -oE "user_token'[^0-9]*value='[a-f0-9]+'" | grep -oE '[a-f0-9]{32}' | head -n1)"
+    curl -s -m 30 -b "$jar" -c "$jar" -o /dev/null \
+      --data "create_db=Create / Reset Database&user_token=${tok}" "$base/setup.php"
+    # Verify: a fresh login now reaches index.php instead of bouncing to setup.php.
+    ltok="$(curl -s -m 15 -c "$jar" "$base/login.php" \
+      | grep -oE "user_token'[^0-9]*value='[a-f0-9]+'" | grep -oE '[a-f0-9]{32}' | head -n1)"
+    loc="$(curl -s -m 15 -b "$jar" -c "$jar" -o /dev/null -w '%{redirect_url}' \
+      --data "username=admin&password=password&Login=Login&user_token=${ltok}" "$base/login.php")"
+    case "$loc" in *index.php) echo "dvwa-db-ready" ;; *) echo "dvwa-db-not-ready: $loc"; exit 1 ;; esac
+  args:
+    executable: /bin/bash
+  register: dvwa_db
+  changed_when: "'dvwa-db-ready' in dvwa_db.stdout"
+  retries: 10
+  delay: 6
+  until: dvwa_db.rc == 0

@@ -1,0 +1,25 @@
+{
+  "backend": "anthropic",
+  "mode": "live",
+  "wall_clock_s": 2619.403,
+  "n_trials": 32,
+  "n_excluded": 0,
+  "exclusion_reasons": [],
+  "provisioning": {
+    "provisioner": "ansible",
+    "applies": 47,
+    "conditions": [
+      "port_rotation",
+      "static_baseline"
+    ],
+    "total_changed": 23
+  },
+  "llm_calls": 173,
+  "token_usage": {
+    "input_tokens": 200706,
+    "output_tokens": 39604,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "est_cost_usd": 0.3987
+}

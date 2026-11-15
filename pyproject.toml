@@ -1,0 +1,88 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mtd-instrument"
+version = "0.1.0"
+description = "Live-testbed research instrument measuring MTD efficacy against AI-generated exploits."
+readme = "README.md"
+# THREE interpreters are in play; the base floor is the LOWEST, for the collection path.
+#   - Collection (`run`, `pilot`, `reconfig-bench`) runs on the control host AND on the sealed
+#     targets node, which is Ubuntu 22.04 on the SYSTEM Python 3.10. Its only third-party need
+#     is PyYAML (cli.py imports the analysis stack lazily). So the base floor is 3.10.
+#   - Analysis (`analyze`, `analysis.*`) runs on the researcher's machine and requires >=3.12:
+#     `requirements-analysis.lock` pins numpy 2.5.1, which needs >=3.12. PEP 621 has no per-extra
+#     `requires-python`, so that floor is enforced by the lock (numpy refuses to install on 3.11/
+#     3.10) and documented on the `analysis` extra below — not by this base value.
+# The collection path is kept 3.10-clean and guarded by tests/test_collection_path_py310_clean.py.
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Logan Scott" }]
+keywords = ["moving-target-defense", "mtd", "cybersecurity", "measurement", "instrument"]
+# Measurement core is intentionally stdlib-only for determinism; config uses pyyaml.
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+# Analysis pipeline (the study's data analysis procedures); exact versions are in
+# requirements-analysis.lock.
+# REQUIRES Python >= 3.12 (the numpy 2.5.1 pin in requirements-analysis.lock does not build on
+# 3.10/3.11). The base `requires-python` above is the 3.10 COLLECTION floor; installing this
+# extra raises that floor on the analysis machine. Never staged to the 3.10 targets node.
+analysis = [
+    "pandas>=2.0",
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "pingouin>=0.5.4",
+    "statsmodels>=0.14",
+    "lifelines>=0.27",
+    "scikit-posthocs>=0.9",
+    "scikit-learn>=1.3",
+]
+# Attacker adapter backends.
+attacker = [
+    "anthropic>=0.40",
+]
+dev = ["pytest>=7.4", "ruff>=0.4", "black>=24.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["measurement*", "mtd*", "attacker*", "harness*", "analysis*", "testbed*"]
+
+[tool.setuptools.package-data]
+# Ship the data files the runtime reads (the courier loads roster.yaml; the harness
+# hashes the system prompt) so they are present in a wheel install too.
+testbed = ["*.yaml"]
+attacker = ["prompts/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+# Statsmodels/lifelines emit convergence/degeneracy warnings on the small synthetic
+# fixtures used in tests; they are expected and handled by graceful fallbacks.
+filterwarnings = [
+    "ignore::UserWarning",
+    "ignore::RuntimeWarning",
+    "ignore::FutureWarning",
+    "ignore::statsmodels.tools.sm_exceptions.ConvergenceWarning",
+    "ignore::statsmodels.tools.sm_exceptions.ConvergenceWarning:statsmodels",
+]
+
+# ruff/black target the LOWER (collection) floor, py310, so a 3.11+ construct in ANY module is
+# caught rather than missed — and so ruff's UP rules never REWRITE code to 3.11-only forms
+# (e.g. UP017 `timezone.utc` -> `datetime.UTC`) that would break the targets node. The analysis
+# path runs on >=3.12, where 3.10-compatible syntax is a strict subset, so this costs it nothing.
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]

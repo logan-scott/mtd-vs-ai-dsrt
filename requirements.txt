@@ -1,0 +1,14 @@
+# Measurement core (stdlib-only except config parsing).
+pyyaml>=6.0
+
+# Analysis pipeline (install with: pip install -e '.[analysis]')
+# pandas>=2.0
+# numpy>=1.26
+# scipy>=1.11
+# pingouin>=0.5.4
+# statsmodels>=0.14
+# lifelines>=0.27
+# scikit-posthocs>=0.9
+
+# Attacker adapter (install with: pip install -e '.[attacker]')
+# anthropic>=0.40

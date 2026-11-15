@@ -1,0 +1,57 @@
+# Outputs written by cli.py (the archived data are under docs/results/)
+data/**
+!data/.gitkeep
+results/**
+*.sqlite
+*.db
+
+# Secrets and credentials
+.secrets
+.env
+*.env
+!*.env.example
+*.auto.tfvars
+infra/terraform.tfvars
+infra/tfplan
+infra/ansible/inventory.ini
+*.pem
+*.key
+id_rsa*
+
+# Terraform state
+infra/**/.terraform/**
+infra/**/*.tfstate
+infra/**/*.tfstate.*
+infra/**/*.tfplan
+infra/**/crash.log
+infra/**/.terraform.lock.hcl
+
+# Ansible
+infra/**/*.retry
+
+# Offline provisioning bundle, built at deploy time
+infra/ansible/roles/attacker/files/instrument/**
+infra/ansible/roles/attacker/files/wheels/**
+infra/ansible/roles/*/files/images/**
+infra/ansible/roles/*/files/*/images/**
+
+# Python
+__pycache__/
+*.py[cod]
+.venv*/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Runtime state and logs
+*.log
+state/**
+
+# macOS
+.DS_Store

@@ -1,0 +1,84 @@
+---
+# Configure the testbed VMs after Terraform provisions them.
+#
+# The isolated network has NO external egress, so every artifact (Docker images
+# for the vulnerable targets, offensive tooling packages, the instrument code)
+# must be staged onto the nodes from the control host — e.g. via an internal
+# registry/apt-mirror on the monitoring node, or `docker load` from pre-pulled
+# tarballs. See infra/README.md ("offline provisioning").
+
+# The targets node's admin sshd must move to :2222 so the SSH decoy can own :22, but
+# the inventory reaches it on :2222 — a chicken-and-egg on the FIRST run. This
+# bootstrap play detects the live admin port (2222 on a re-run, else 22 on a fresh
+# node), moves sshd to :2222 if needed, and switches the connection — so a clean first
+# `make deploy` needs no manual sshd edit. Idempotent on re-runs.
+- name: Bootstrap the targets admin SSH port to :2222
+  hosts: targets
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Probe whether :2222 already answers (re-run) from the control host
+      ansible.builtin.wait_for:
+        host: "{{ ansible_host }}"
+        port: 2222
+        timeout: 5
+      delegate_to: localhost
+      become: false
+      register: probe_2222
+      ignore_errors: true
+
+    - name: Connect on :2222 if it is up, else :22 for the first-run bootstrap
+      ansible.builtin.set_fact:
+        ansible_port: "{{ 2222 if (probe_2222 is succeeded) else 22 }}"
+
+    - name: Move the admin sshd to :2222 (idempotent)
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "^#?Port "
+        line: "Port 2222"
+      register: sshd_port
+
+    - name: Restart sshd when the port changed (first run)
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+      when: sshd_port is changed
+
+    - name: Target :2222 for the rest of the run
+      ansible.builtin.set_fact:
+        ansible_port: 2222
+
+    - name: Reset the connection so later plays use :2222
+      ansible.builtin.meta: reset_connection
+
+    - name: Confirm :2222 is up before proceeding
+      ansible.builtin.wait_for:
+        host: "{{ ansible_host }}"
+        port: 2222
+        timeout: 30
+      delegate_to: localhost
+      become: false
+
+- name: Vulnerable targets (DVWA, Juice Shop, WebGoat, Vulhub, Metasploitable-class)
+  hosts: targets
+  become: true
+  roles:
+    - role: targets
+
+- name: AI-enabled offensive workflow (standard public tooling + attacker package)
+  hosts: attacker
+  become: true
+  roles:
+    - role: attacker
+
+- name: MTD orchestrator + deception
+  hosts: mtd
+  become: true
+  roles:
+    - role: monitoring # placeholder; the MTD orchestrator ships with the instrument
+
+- name: Monitoring agents + measurement data store
+  hosts: monitoring
+  become: true
+  roles:
+    - role: monitoring

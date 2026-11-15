@@ -1,0 +1,91 @@
+---
+# Idempotent per-attempt MTD reconfiguration, driven by the harness.
+#
+# The harness AnsibleProvisioner (harness/live_runner.py) runs this once per attempt
+# from the control host with the in-force observable configuration passed as
+# --extra-vars JSON, e.g.:
+#
+#   ansible-playbook -i inventory.ini reconfigure.yml \
+#     --extra-vars '{"mtd_condition":"port_rotation","vuln_profile_version":"vp-0.1.0",
+#                    "config_checksum":"...","services":[{...}]}'
+#
+# It writes the desired state to the targets node and runs the idempotent
+# reconfigure.sh (staged by the targets role) to reconcile the containers + the
+# deception responder. Fast + idempotent: unchanged state is a no-op. Confined to
+# the isolated subnet; applies no configuration outside it.
+
+- name: Apply the in-force MTD condition to the targets node
+  hosts: targets
+  become: true
+  gather_facts: false
+  vars:
+    desired_state:
+      mtd_condition: "{{ mtd_condition }}"
+      vuln_profile_version: "{{ vuln_profile_version }}"
+      config_checksum: "{{ config_checksum }}"
+      services: "{{ services }}"
+  tasks:
+    - name: Fail closed if the desired state is incomplete
+      ansible.builtin.assert:
+        that:
+          - mtd_condition is defined
+          - config_checksum is defined
+          - services is defined and services | length > 0
+        fail_msg: "reconfigure requires mtd_condition, config_checksum, and a non-empty services list"
+
+    - name: Write the desired observable state (checksum-tagged, idempotent)
+      ansible.builtin.copy:
+        content: "{{ desired_state | to_nice_json }}\n"
+        dest: "/opt/testbed/state/desired-{{ config_checksum }}.json"
+        mode: "0644"
+      register: state_file
+
+    - name: Reconcile containers + deception responder to the desired state
+      ansible.builtin.command:
+        cmd: "/opt/testbed/reconfigure.sh {{ state_file.dest }}"
+      register: reconfig
+      changed_when: "'applied' in reconfig.stdout"
+
+    # DVWA keeps its training database INSIDE its container, so the database is empty whenever
+    # the container is recreated: at every port change (port_rotation, combined_mtd_deception at
+    # every attempt) and whenever a sequence starts from a different layout than the last one
+    # left. Until "Create / Reset Database" is run again (DVWA's documented provisioning step,
+    # which the targets role runs once at deploy), every DVWA module redirects to the login page
+    # and the dvwa_cmd_injection primitive cannot succeed: DVWA was un-compromisable for nearly
+    # every attempt of every archived run (2026-10-27 review). Checked at EVERY attempt: a
+    # login that reaches index.php means the database is there (ok); otherwise it is created
+    # and the login verified (changed). Retried while a recreated container starts (MySQL, then
+    # Apache). The harness records ok/changed per attempt (AnsibleProvisioner, "dvwa_db").
+    - name: Ensure the DVWA training database exists (recreated containers lose it)
+      ansible.builtin.shell: |
+        set -uo pipefail
+        base="http://{{ targets_bind_host | default('172.31.66.10') }}:{{ dvwa_port }}"
+        jar="$(mktemp)"; trap 'rm -f "$jar"' EXIT
+        token() { grep -oE "user_token'[^0-9]*value='[a-f0-9]+'" | grep -oE '[a-f0-9]{32}' | head -n1 || true; }
+        login_location() {
+          : > "$jar"
+          ltok="$(curl -s -m 15 -c "$jar" "$base/login.php" | token)"
+          curl -s -m 15 -b "$jar" -c "$jar" -o /dev/null -w '%{redirect_url}' \
+            --data "username=admin&password=password&Login=Login&user_token=${ltok}" \
+            "$base/login.php" || true
+        }
+        # DVWA answers only once MySQL and Apache are up; until then Ansible retries this task.
+        curl -s -m 10 -o /dev/null "$base/login.php" || { echo "dvwa-not-answering"; exit 1; }
+        case "$(login_location)" in *index.php) echo "dvwa-db-present"; exit 0 ;; esac
+        stok="$(curl -s -m 15 -c "$jar" "$base/setup.php" | token)"
+        curl -s -m 30 -b "$jar" -c "$jar" -o /dev/null \
+          --data "create_db=Create / Reset Database&user_token=${stok}" "$base/setup.php" || true
+        loc="$(login_location)"
+        case "$loc" in
+          *index.php) echo "dvwa-db-initialized" ;;
+          *) echo "dvwa-db-not-ready: ${loc:-no redirect}"; exit 1 ;;
+        esac
+      args:
+        executable: /bin/bash
+      vars:
+        dvwa_port: "{{ (services | selectattr('service_name', 'equalto', 'http-dvwa') | first)['port'] }}"
+      register: dvwa_db
+      changed_when: "'dvwa-db-initialized' in dvwa_db.stdout"
+      retries: 40
+      delay: 3
+      until: dvwa_db.rc == 0

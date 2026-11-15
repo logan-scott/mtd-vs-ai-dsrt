@@ -1,0 +1,160 @@
+---
+# Provision the AI-enabled offensive workflow node with STANDARD, publicly
+# available tooling only (no novel exploit/malware code) plus the instrument's
+# attacker package. Tool versions are recorded per trial (tooling_versions).
+
+- name: Install standard scanning / exploitation tooling
+  ansible.builtin.apt:
+    name:
+      - nmap
+      - netcat-openbsd # nc: the vsftpd primitive's FTP-banner reach probe
+      - curl # the training-app couriers (DVWA / Juice Shop / WebGoat) + Struts reach probe
+      - python3
+      - python3-venv
+      - git
+      - gnupg # dearmor the Metasploit apt signing key
+      - software-properties-common # provides add-apt-repository (for deadsnakes)
+    state: present
+    update_cache: true
+
+# ---------------------------------------------------------------------------
+# Metasploit Framework: the maintained modules the two CVE primitives DRIVE
+# (exploit/unix/ftp/vsftpd_234_backdoor, exploit/multi/http/struts2_content_type_ognl).
+# No exploit is authored in this repo — the technique comes entirely from these modules.
+# metasploit-framework is a large package; like nmap above (and the deadsnakes PPA) it is
+# installed during the provisioning egress window — at trial time the node has no egress. The
+# tasks below reach apt.metasploit.com directly, so a fully no-egress `mirror`-mode deploy must
+# repoint these at the internal mirror (the mirror must carry the metasploit-framework package
+# + key); they are NOT auto-served from the mirror as written.
+# ---------------------------------------------------------------------------
+- name: Fetch the Metasploit Framework apt signing key
+  ansible.builtin.get_url:
+    url: https://apt.metasploit.com/metasploit-framework.gpg.key
+    dest: /tmp/metasploit-framework.gpg.key
+    mode: "0644"
+
+- name: Install the Metasploit signing key into a keyring
+  ansible.builtin.command:
+    cmd: >-
+      gpg --batch --yes --dearmor
+      -o /usr/share/keyrings/metasploit-framework.gpg
+      /tmp/metasploit-framework.gpg.key
+    creates: /usr/share/keyrings/metasploit-framework.gpg
+
+- name: Add the Metasploit Framework apt repository
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/usr/share/keyrings/metasploit-framework.gpg]
+      https://apt.metasploit.com/ lucid main
+    filename: metasploit-framework
+    state: present
+
+- name: Install metasploit-framework (maintained CVE modules; standard tooling only)
+  ansible.builtin.apt:
+    name: metasploit-framework
+    state: present
+    update_cache: true
+
+# msfconsole builds its module metadata cache lazily (in a background thread) on first module
+# access; a cold/partial cache makes a module load with the wrong compatible payloads. Warm it
+# ONCE here (reload_all reparses every module from disk and persists the cache) so the primitives
+# load their modules correctly at trial time. stdin is closed so the first-run setup prompt takes
+# its (no-database) default non-interactively; the JSON metadata cache needs no database.
+- name: Warm the Metasploit module metadata cache (run as the trial user)
+  ansible.builtin.command:
+    cmd: msfconsole -q -x "reload_all; exit -y"
+    creates: "/home/{{ ansible_user | default('labadmin') }}/.msf4/store/modules_metadata.json"
+  become: true
+  become_user: "{{ ansible_user | default('labadmin') }}"
+  environment:
+    HOME: "/home/{{ ansible_user | default('labadmin') }}"
+  args:
+    stdin: ""
+
+# Resident Metasploit daemon (2026-10-31). The Struts and vsftpd primitives run their modules
+# in msfd, which loads the framework once, instead of starting msfconsole for every delivery
+# (in October 2026 their deliveries took 14 s and 22 s, mostly Metasploit's own overhead).
+# Exploits are scored when they complete, so that overhead decided whether a reconfiguration
+# overtook the exploit (docs/rerun_runbook.md §7p). msfd has no authentication: the unit binds
+# it to loopback only, and runs it as the trial user, from that user's home, so it reads the
+# cache warmed above (files/msfd.service says why the working directory matters). Without it
+# the two primitives print no verdict, and a live run refuses to start
+# (harness.tooling.require_msfd).
+- name: Install the resident Metasploit daemon unit (msfd, loopback only)
+  ansible.builtin.copy:
+    src: msfd.service
+    dest: /etc/systemd/system/msfd.service
+    mode: "0644"
+  register: msfd_unit
+
+- name: Start msfd now and at every boot
+  ansible.builtin.systemd:
+    name: msfd
+    daemon_reload: true
+    enabled: true
+    state: "{{ 'restarted' if msfd_unit.changed else 'started' }}"
+
+- name: Wait until msfd accepts connections on 127.0.0.1:55554 (it loads the framework first)
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 55554
+    timeout: 600
+
+# The offline wheelhouse is built on the control host's Python 3.11, so the
+# dependency wheels are cp311 (e.g. PyYAML) and mtd-instrument requires >=3.11. The
+# Ubuntu 22.04 node ships 3.10, so install 3.11 (deadsnakes) DURING the provisioning
+# egress window and build the venv with it — otherwise the offline install fails on
+# a Python/ABI mismatch. Keep the control host and node Python versions equal.
+- name: Add the deadsnakes PPA for Python 3.11
+  ansible.builtin.apt_repository:
+    repo: ppa:deadsnakes/ppa
+    update_cache: true
+
+- name: Install Python 3.11 to match the offline wheelhouse (cp311)
+  ansible.builtin.apt:
+    name:
+      - python3.11
+      - python3.11-venv
+    state: present
+
+- name: Stage the instrument attacker package
+  ansible.builtin.copy:
+    src: files/instrument
+    dest: /opt/instrument
+    mode: "0755"
+  # files/instrument is assembled by scripts/build_offline_bundle.sh (the instrument
+  # source tree, incl. testbed/roster.yaml which the courier reads). Not committed —
+  # built during the deploy flow, like files/wheels below.
+
+- name: Stage the offline wheelhouse (attacker extra + deps)
+  ansible.builtin.copy:
+    src: files/wheels/
+    dest: /opt/wheels/
+    mode: "0644"
+  # Built by scripts/build_offline_bundle.sh on the control host (which has egress),
+  # so this node installs with NO index and NO egress.
+
+- name: Install the attacker package from the offline wheelhouse (Python 3.11)
+  ansible.builtin.pip:
+    # Install the pre-built mtd-instrument wheel BY NAME from /opt/wheels — the staged
+    # source dir is not a reliable offline source build. virtualenv_command makes the
+    # pip module use the stdlib venv with 3.11 (the standalone `virtualenv` exe is not
+    # installed, and the wheels are cp311).
+    name: mtd-instrument
+    virtualenv: /opt/instrument/.venv
+    virtualenv_command: "/usr/bin/python3.11 -m venv"
+    extra_args: "--no-index --find-links /opt/wheels"
+  # ANTHROPIC_API_KEY: the LLM planner runs on the control host (which has a
+  # tightly-scoped egress path to the model API); the offensive ACTIONS execute
+  # from this node, which has NO external egress. See infra/README.md.
+
+- name: Stage the pre-staged exploit primitives (standard-tooling couriers)
+  ansible.builtin.copy:
+    src: files/primitives/
+    dest: /opt/primitives/
+    mode: "0755"
+  # These are thin wrappers around standard, publicly-documented techniques (curl,
+  # netcat, and the maintained Metasploit modules run in msfd) keyed to testbed/roster.yaml (which ships inside the staged instrument
+  # package above, pinned by vuln_profile_version). The harness courier
+  # (harness.live_targets.SubprocessTransport.deliver) invokes /opt/primitives/<name>.sh
+  # and parses its single JSON line. No novel exploit/malware is authored here.

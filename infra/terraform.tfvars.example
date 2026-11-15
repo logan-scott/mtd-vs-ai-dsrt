@@ -1,0 +1,17 @@
+# Non-secret overrides. Copy to `terraform.tfvars` to change defaults.
+# (Defaults: node pve2, storage data2, images on software-images, isolated
+# bridge vmbr9, subnet 172.31.66.0/24.)
+#
+# IMPORTANT: the testbed subnet MUST NOT overlap any network you use. The study's
+# lab already used 10.0/10.10/10.20, so the default is 172.31.66.0/24. Confirm 172.31.66.0/24 is unused on your network; if it
+# collides, set `isolated_subnet_prefix` here to a free /24 (first three octets).
+
+node_name       = "pve2"
+vm_datastore    = "data2"
+image_datastore = "software-images"
+# isolated_subnet_prefix = "172.31.66"   # uncomment/change only if the default collides
+
+# SSH keys injected into every VM's cloud-init user.
+ssh_public_keys = [
+  # "ssh-ed25519 AAAA... researcher@workstation",
+]

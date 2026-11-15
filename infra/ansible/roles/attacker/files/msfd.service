@@ -1,0 +1,38 @@
+# Resident Metasploit console daemon for the two Metasploit primitives (2026-10-31).
+#
+# struts_s2_045.sh and vsftpd_backdoor.sh run their maintained modules in this daemon instead of
+# starting msfconsole for every delivery (in October 2026 their deliveries took 14 s and 22 s,
+# mostly Metasploit's own overhead). msfd loads the framework once and gives each TCP
+# connection its own console. Metasploit never releases a console it has served (each stays
+# registered for session events), so msfd's memory grows a little with every delivery:
+# docs/rerun_runbook.md §7q measures it and §7j says when to restart msfd.
+#
+# msfd has NO authentication, so it listens on loopback only (-a 127.0.0.1): no other host can
+# connect to a loopback socket, and the primitives run on this node. msfd's own allow-list (-A)
+# is not used: in Metasploit 6.4 msfd parses it before Rex::Socket is loaded and exits ("Bad
+# argument for -A: uninitialized constant Rex::Socket"; found on the executor node 2026-11-01).
+#
+# It runs as the trial user, so it reads the module cache the attacker role warmed (~/.msf4),
+# from that user's home and with a UTF-8 locale, as msfconsole ran over SSH. The working
+# directory matters: Metasploit's Rails application takes it as its root and puts <root>/lib on
+# Ruby's load path, so from systemd's default "/" it scans /usr/lib and stops at
+# /usr/lib/ssl/private (Permission denied), and msfd exits at start-up (found 2026-11-01).
+#
+# Installed and started by infra/ansible/roles/attacker; docs/rerun_runbook.md §7q stages it by
+# hand. Loading the framework takes up to a minute or two after each start; until then the port
+# refuses, and a primitive prints no verdict. In ExecStart, "$$" is systemd's escape for "$".
+[Unit]
+Description=Metasploit console daemon (msfd) for the pre-staged primitives, loopback only
+After=network.target
+
+[Service]
+Type=simple
+User=labadmin
+WorkingDirectory=/home/labadmin
+Environment=HOME=/home/labadmin LANG=C.UTF-8
+ExecStart=/bin/bash -c 'exec "$$(command -v msfd || echo /opt/metasploit-framework/bin/msfd)" -a 127.0.0.1 -p 55554 -f -q'
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

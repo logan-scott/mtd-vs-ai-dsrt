@@ -1,0 +1,43 @@
+{
+  "config_fingerprint": "a87dd8519c04f706",
+  "config": {
+    "conditions": [
+      "static_baseline",
+      "network_shuffling",
+      "port_rotation",
+      "endpoint_mutation",
+      "combined_mtd_deception"
+    ],
+    "sequences_per_condition": 20,
+    "attempts_per_sequence": 8,
+    "randomization_seed": 20260630,
+    "vuln_profile_version": "vp-0.2.0",
+    "attacker_model_id": "claude-haiku-4-5-20251001",
+    "attacker_temperature": 0.7,
+    "attacker_tool_choice": null,
+    "mtd_cadence_s": 35,
+    "mtd_rotation_phase": "randomized",
+    "max_actions": 10,
+    "max_trial_duration_s": 1800,
+    "attacker_model_version": "claude-haiku-4-5-20251001",
+    "system_prompt_path": "attacker/prompts/system.md",
+    "monitoring_interval_s": 5,
+    "legitimate_rate_rps": 1.0,
+    "attacker_clock": "wall",
+    "attacker_clock_dating": "probe_time",
+    "attacker_clock_scoring": "completion",
+    "run_order": "interleaved",
+    "scan_scope": "target_host",
+    "surface_check": "strict",
+    "attacker_prompt_format": 2
+  },
+  "code_at_first_start": {
+    "started_utc": "2026-11-05T03:22:30+00:00",
+    "git_commit": "6cd35e6858070b037d97a9f6dfd7a4c975d8340a",
+    "git_uncommitted": [
+      "?? instrument/docs/results/full_sonnet5/",
+      "?? instrument/infra/ansible/inventory.ini"
+    ],
+    "git_uncommitted_sha256": "8006e69ea98e9ce4"
+  }
+}

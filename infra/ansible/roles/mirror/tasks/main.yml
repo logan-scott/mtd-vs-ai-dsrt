@@ -1,0 +1,60 @@
+---
+# ZERO-EGRESS ALTERNATIVE (provided, NOT required) — internal artifact mirror.
+#
+# The default provisioning path opens a temporary, audited egress window and closes
+# it before any trial (harness/provision.py + `cli.py deploy --mode egress`). This
+# role is the stricter alternative: stand up an internal apt-mirror + Docker registry
+# + Python wheel index on the monitoring node so the testbed nodes NEVER need egress,
+# not even during provisioning. Select it with `cli.py deploy --mode mirror` (which
+# opens no egress); run this playbook (infra/ansible/mirror.yml) FIRST.
+#
+# The mirror node itself needs a one-time population (either a temporary egress
+# window on the monitoring node only, or artifacts staged from the control host).
+# Everything stays on 172.31.66.0/24 at trial time.
+
+- name: Install mirror services (registry, apt-mirror, web server for wheels)
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - apt-mirror
+      - nginx
+    state: present
+    update_cache: true
+
+- name: Run a local Docker registry (holds the five target images + responder)
+  ansible.builtin.command:
+    cmd: >-
+      docker run -d --restart=unless-stopped --name registry
+      -p 172.31.66.40:5000:5000 registry:2
+  register: registry_run
+  changed_when: "'already in use' not in registry_run.stderr"
+  failed_when: registry_run.rc != 0 and 'already in use' not in registry_run.stderr
+
+- name: Create the wheel index directory (served over http for --find-links)
+  ansible.builtin.file:
+    path: /var/www/wheels
+    state: directory
+    mode: "0755"
+
+- name: Serve the wheel index on the isolated network
+  ansible.builtin.copy:
+    dest: /etc/nginx/sites-available/wheels
+    mode: "0644"
+    content: |
+      server {
+        listen 172.31.66.40:8081;
+        root /var/www/wheels;
+        autoindex on;
+      }
+  notify: reload nginx
+
+# POPULATION (one-time; see infra/README.md "offline provisioning"):
+#   - Push the five target images + mtd-testbed/deception-responder into the registry
+#     (docker tag ... 172.31.66.40:5000/... && docker push), from a host that pulled
+#     them (control host, or a temporary egress window on THIS node only).
+#   - apt-mirror the pinned package set; point the testbed nodes' apt sources here.
+#   - Copy the built wheelhouse into /var/www/wheels; nodes install with
+#     --find-links http://172.31.66.40:8081.
+# The nodes must then be configured to use these (apt sources, docker insecure
+# registry, pip index) — the operator wires those per site policy. This role stops at
+# standing the mirror up; --mode mirror assumes it is populated and the nodes point at it.

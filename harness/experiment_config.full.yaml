@@ -1,0 +1,237 @@
+# =============================================================================
+# Main study configuration (2026-10-27): the confirmatory evaluation, on the real clock.
+# Its data are in docs/results/full/.
+#
+# Derived from experiment_config.example.yaml; ONLY the keys marked "RE-RUN" (the settings
+# fixed for the final data collection) differ. Decisions:
+#   - attacker.clock: wall, dating each scan to the instant it probed the targets host
+#   - 80 sequences per condition (corrected power, C243), conditions interleaved (C209)
+#   - no simulated fault injection (C278)
+#   - the full-subnet scan (the main study); the fast-scan check is
+#     experiment_config.full_fastscan.yaml
+#   - live.surface_check: strict -- no attempt starts until every service answers (2026-10-27)
+# =============================================================================
+# =============================================================================
+# Declarative experiment configuration
+# =============================================================================
+# All experiment parameters live here; NOTHING is hardcoded in the harness.
+# Copy to experiment_config.yaml (gitignored if it carries secrets) and edit.
+# Timing-sensitive values (timeouts, cadence, sampling) are PILOT-CALIBRATED.
+# Defaults reproduce the study's default experiment parameters.
+
+meta:
+  study: "MTD vs AI-generated exploits — live testbed instrument"
+  config_version: "0.2.0-rerun"         # RE-RUN
+  randomization_seed: 20260630        # recorded on every trial row
+
+# Digest-pinned, validated vulnerable-target set (see testbed/roster.yaml + the
+# docker-compose in infra/ansible/roles/targets). Recorded on every trial row.
+vuln_profile_version: "vp-0.2.0"
+
+# --- Experimental design -----------------------------------------------------
+design:
+  conditions:                          # 6 = static baseline + 5 MTD techniques
+    - static_baseline
+    - network_shuffling
+    - port_rotation
+    - endpoint_mutation
+    - deceptive_presentation
+    - combined_mtd_deception
+  attempts_per_sequence: 8             # within-subjects repeated measures (RQ3)
+  sequences_per_condition: 80          # RE-RUN: corrected a-priori requirement (C243: 138 trials x DE 4.0 -> 69 -> 80 with 15%)
+  run_order: interleaved               # RE-RUN: rounds of one sequence per condition, shuffled per round (C209)
+  min_sequences_per_condition: 16      # provisional floor (128/condition); recompute via design effect DE=1+(m-1)rho
+  block_order: randomized              # condition-block order; seed above
+  # RE-RUN: 6 conditions × 80 sequences × 8 attempts = 3,840 trials (+15 repeatability trials).
+
+# --- Trial limits ------------------------------------------------------------
+limits:
+  max_trial_duration_s: 1800           # 30 min; TTC/TFVE right-censoring bound
+  max_actions: 10                      # CALIBRATED (was 50): a trivially fast attacker must not
+                                       # always win — bounding actions leaves room for MTD to deny
+                                       # a compromise (see docs/pilot_calibration.md). Tunable.
+
+# --- MTD orchestration -------------------------------------------------------
+mtd:
+  cadence_s: 35                        # CALIBRATED (was 90). Cadence is the effect-size MODERATOR
+                                       # (docs/pilot_calibration.md, with the live pilot numbers).
+                                       # The attacker recons at ~+30 s and first-exploits at ~+40 s, so:
+                                       #   cadence >= 45  -> first tick (+45) lands AFTER the compromise
+                                       #                     -> obj_b 1.00 in both arms (no effect);
+                                       #   cadence  = 35  -> tick (+35) lands BETWEEN recon and exploit
+                                       #                     -> recon-time intel is stale -> LIVE obj_b
+                                       #                     goes 1.00 (baseline) -> 0.00 (port_rotation),
+                                       #                     and offline matches (0.00) -> obj_b parity holds.
+                                       # 35 is > the ~30 s recon offset so the FIRST recon still sees the
+                                       # physical surface. With rotation_phase: randomized (below), the
+                                       # binary obj_b is no longer a floor/ceiling step of cadence -- the
+                                       # randomized tick phase makes it graded/varianced (Method C). See
+                                       # docs/pilot_calibration.md.
+  rotation_phase: randomized           # METHOD C (was implicitly 'fixed'). fixed | randomized.
+                                       # fixed:      ticks at start + k*cadence (legacy; obj_b is a 0/1
+                                       #             step function of cadence -> sd=0 on the binary).
+                                       # randomized: per-trial phase phi ~ U[0, cadence) shifts the grid to
+                                       #             start + phi + k*cadence, drawn seeded from the trial
+                                       #             seed (reproducible). The reconfiguration then lands on
+                                       #             a random phase relative to the attacker's deterministic
+                                       #             recon(+30s)/exploit(+40s) timeline, so the stale-vs-fresh
+                                       #             race is won by the attacker on some trials (compromise)
+                                       #             and the defense on others -> exploitation_success takes
+                                       #             INTERMEDIATE proportions with real variance. Cadence stays
+                                       #             the controlled moderator; the grading comes from the phase.
+  trigger_mode: time                   # time | event
+  checksum_verify: true                # baseline-equivalence gate pre-trial
+
+# --- Monitoring & synthetic workload ----------------------------------------
+monitoring:
+  sample_interval_s: 5                 # CPU/mem/network sampling resolution
+workload:
+  legitimate_rate_rps: 1.0             # ~1 request/s synthetic legit workload
+  availability_timeout_s: 2            # valid-response timeout
+  synthetic_probe: standardized        # for latency_overhead baseline pairing
+
+# --- Attacker (control variable — fixed & recorded per trial) ----------------
+attacker:
+  backend: anthropic                   # pluggable adapter; see attacker/
+  model_id: "claude-haiku-4-5-20251001"  # PRIMARY model (pinned snapshot; swap via this key only)
+  model_version: "claude-haiku-4-5-20251001"  # RE-RUN: the pinned snapshot IS the version (C235)
+  temperature: 0.7                     # CALIBRATED (was 0.0): a fixed NONZERO temperature is held
+                                       # constant across trials (control variable) but makes the
+                                       # sampled attack trajectory vary, giving the clustered
+                                       # repeated-measures design + RQ3 real trial-to-trial variance
+                                       # (temperature 0.0 produced sd=0 everywhere). Recorded per row.
+  # tool_choice: any                   # OFF BY DEFAULT (key absent == the API default,
+                                       # and exactly what every run archived under
+                                       # docs/results/ sent). Accepted values:
+                                       #   (absent) / null -> omit `tool_choice` from the
+                                       #        request entirely. CONTROL condition; the
+                                       #        request is byte-identical to the frozen arms.
+                                       #   any  -> {"type": "any"}: the model MUST call a
+                                       #        tool. A response with no tool_use block is
+                                       #        otherwise coerced to a stop by the client
+                                       #        (attacker/backends.py), so a non-compliant
+                                       #        reply is scored as a chosen disengagement.
+                                       #   auto -> {"type": "auto"}: the API default, sent
+                                       #        EXPLICITLY. Lets "key absent" and "key
+                                       #        present with the default" be separated.
+                                       # This is an experimental MANIPULATION, not a fix:
+                                       # enabling it on one arm adds a difference between
+                                       # arms, so its effect must be measured first.
+                                       # Recorded per row as attacker_tool_choice; part of
+                                       # the checkpoint fingerprint (no cross-setting resume).
+                                       # Any other value is REJECTED at config load — a typo
+                                       # must not silently give you the control condition.
+  context_window: 200000
+  system_prompt_path: "attacker/prompts/system.md"   # hashed → system_prompt_hash
+  tool_access: [recon, vuln_infer, exploit_select, exploit_deliver]
+  # additional_models: []              # secondary robustness only (see A5)
+  # --- Resilience (operational only; never affects sampled outputs) -----------
+  # A multi-hour confirmatory run must survive transient Anthropic outages (HTTP 529
+  # OverloadedError, rate limits, connection/timeout). Two retry layers, both recorded
+  # per trial row for provenance:
+  max_retries: 8                       # SDK-level retries (exponential backoff; honors Retry-After)
+  request_timeout_s: 120               # per-request timeout (seconds)
+  api_retry_attempts: 6                # ADDITIONAL app-level backoff-with-jitter on top of the SDK
+  # --- Attacker clock (see docs/metrics_specification.md §4f) ----------------
+  clock: wall                          # RE-RUN. modeled | wall. modeled (== key absent) charges the
+                                       # planner's fixed per-action quanta (recon command +5 s,
+                                       # snapshot +30 s, exploit +10 s) whatever the real elapsed
+                                       # time -- the clock of every archived run. wall charges the
+                                       # REAL elapsed time of each planner call, scan and
+                                       # delivery. Recorded per row as clock_mode; part of the
+                                       # checkpoint fingerprint when not modeled. Any other value
+                                       # is REJECTED at config load.
+  record_timing: true                  # RE-RUN (always on under wall). Record real action timing (and the paired modeled-vs-wall
+                                       # staleness of every delivery) under the modeled clock too;
+                                       # always on under wall. Instrumentation only -- no outcome
+                                       # changes -- but real durations vary run to run, so it is
+                                       # off by default to keep the offline pipeline
+                                       # byte-deterministic. RECOMMENDED true for live runs.
+
+# --- Full-run operational policy (does not affect the science) ---------------
+run:
+  # 'exclude': a sequence lost to an unrecoverable API/infra fault (after all retries) is
+  #   recorded as an exclusion and skipped — the ~15% exclusion buffer covers it — and the
+  #   run continues. 'halt': write the checkpoint and exit non-zero so the operator resumes
+  #   after the incident clears. The full run is checkpointed under data/full/ and resumable
+  #   (re-run the same command); --fresh discards the checkpoint and starts clean.
+  on_trial_failure: exclude
+  fault_rate: 0.0                      # RE-RUN: no SIMULATED fault injection; every exclusion is real (C278)
+  max_consecutive_exclusions: 5        # circuit breaker: even under 'exclude', HALT after this
+                                       # many back-to-back sequence failures (a systemic outage/
+                                       # bug, not the rare loss the ~15% buffer covers). 0 disables.
+
+# --- Analysis parameters -----------------------------------------------------
+analysis:
+  alpha: 0.05
+  power: 0.80
+  effect_size_d: 0.50                  # a-priori (G*Power → 64/condition)
+  fdr_method: benjamini_hochberg       # within each RQ, secondary outcomes
+  # exploit_success_rate (>=1 objective) + exploitation_success (obj_b co-primary)
+  primary_outcomes: [exploit_success_rate, exploitation_success, time_to_compromise_s]
+
+# --- Special harness modes ---------------------------------------------------
+modes:
+  pilot:                               # IRB pilot: baseline + one MTD condition
+    conditions: [static_baseline, port_rotation]
+    sequences_per_condition: 2         # 2 × 8 = 16/condition → 32 pilot trials
+  repeatability:                       # ICC: fixed config, adaptation disabled
+    condition: static_baseline
+    adaptation_enabled: false
+    n_trials: 15                       # >= 15 repeatability trials for ICC
+  clock_validation:                    # `cli.py validate-clock` (docs/clock_validation_runbook.md):
+    conditions:                        # every (condition, sequence) runs under BOTH clocks with the
+      - network_shuffling              # same seed (identical MTD schedule + phase), arm order
+      - port_rotation                  # alternating by sequence index; timing recorded on both.
+      - endpoint_mutation              # The four conditions that move a GENUINE service on every
+      - combined_mtd_deception         # tick (the race the clock decides): 4 x 6 x 8 x 2 = 384.
+    sequences_per_condition: 6         # 6 independent pairs per condition (df = 20 pooled)
+    criteria:                          # PRE-SPECIFIED. Locked into the run's checkpoint manifest at
+                                       # the first start; a resume under different values is refused.
+      equivalence_margin: 0.10         # |wall - modeled| in the first genuine exploit's stale prob.;
+                                       # 95% cluster-robust t interval (pairs = clusters) must lie inside
+      min_first_genuine_deliveries: 30 # fewer -> verdict "insufficient_data"
+      min_pairs_per_condition: 4       # fewer independent sequences in any race-sensitive condition
+                                       # -> "insufficient_data" (one pair cannot estimate variance)
+
+# --- Provisioning envelope (recorded; see infra/) ----------------------------
+infra:
+  proxmox_node: pve2.lonet
+  storage_pool: data2
+  image_storage: software-images
+  base_os: "ubuntu-22.04-cloudimg"     # pinned; control variable
+  network: internal-only               # NO uplink / NO external egress
+  # Per-role sizing lives in infra/ tfvars, within the ~12 vCPU / 48 GiB budget.
+
+# --- Live testbed + egress split (offline is the default; live is opt-in) -----
+# Consumed only by `--live` / `--dry-run` / `preflight`. The fail-closed guards
+# refuse to start without testbed_cidr and assert the dual-homed egress split
+# (harness.safety): every non-control node has no egress and the control host does
+# not forward the testbed to the internet. All hosts must be SSH-reachable from the
+# control host (the isolated net has no DNS — use IPs).
+live:
+  enabled: false                       # opt-in; --live overrides per run
+  testbed_cidr: "172.31.66.0/24"       # allowlist; MUST match infra isolated_subnet_prefix
+  control_host: "10.5.0.50"            # this host: harness + planner (dual-homed; forwarding OFF)
+  executor_node: "172.31.66.20"        # runs offensive actions (NO route off testbed)
+  targets_host: "172.31.66.10"         # where genuine + decoy services are provisioned
+  testbed_nodes:                       # every non-control node the preflight probes for isolation
+    - "172.31.66.10"
+    - "172.31.66.20"
+    - "172.31.66.30"
+    - "172.31.66.40"
+  node_ssh_ports:                      # admin sshd port per host (targets is on 2222; SSH decoy owns 22)
+    "172.31.66.10": 2222
+  ssh_user: labadmin
+  # Provisioning-only DNS (used only during the temporary egress window; reverted +
+  # verified sealed before any trial). provisioning_iface is the node NIC name.
+  # provisioning_dns "" = auto-detect the control host's upstream resolver (a public
+  # IP like 1.1.1.1 fails where external port 53 is blocked); set it to override.
+  provisioning_dns: ""
+  provisioning_iface: "eth0"
+  provisioning_dns_check_host: "archive.ubuntu.com"
+  scan_scope: subnet                  # RE-RUN: sweep the whole testbed_cidr (-Pn), as every archived run
+  surface_check: strict               # RE-RUN: every attempt waits until every in-force service answers;
+                                      # a scan that misses one is an infrastructure fault (2026-10-27 review)
+  readiness_timeout_s: 300            # RE-RUN: how long an attempt may wait for its services to come up
+

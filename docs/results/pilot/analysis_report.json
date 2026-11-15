@@ -1,0 +1,1268 @@
+{
+  "n_trials_included": 32,
+  "n_excluded": 0,
+  "descriptives": [
+    {
+      "condition": "port_rotation",
+      "metric": "exploit_success",
+      "n": 16,
+      "mean": 1.0,
+      "sd": 0.0,
+      "median": 1.0,
+      "iqr": 0.0
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "exploitation_success",
+      "n": 16,
+      "mean": 0.75,
+      "sd": 0.4472135954999579,
+      "median": 1.0,
+      "iqr": 0.25
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "time_to_compromise_s",
+      "n": 16,
+      "mean": 476.25,
+      "sd": 789.3319960574257,
+      "median": 35.0,
+      "iqr": 441.25
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "time_to_enumeration_s",
+      "n": 16,
+      "mean": 25.0,
+      "sd": 0.0,
+      "median": 25.0,
+      "iqr": 0.0
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "time_to_first_valid_exploit_s",
+      "n": 16,
+      "mean": 38.125,
+      "sd": 6.020797289396148,
+      "median": 35.0,
+      "iqr": 2.5
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "recon_accuracy_f1",
+      "n": 16,
+      "mean": 0.42307692307692313,
+      "sd": 0.0923076923076923,
+      "median": 0.4000000000000001,
+      "iqr": 0.0
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "attack_path_churn",
+      "n": 14,
+      "mean": 0.580612244897959,
+      "sd": 0.03436215967445455,
+      "median": 0.5714285714285714,
+      "iqr": 0.0
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "attempts_per_success",
+      "n": 16,
+      "mean": 2.5,
+      "sd": 2.8751811537130436,
+      "median": 1.0,
+      "iqr": 1.0
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "latency_overhead_ms",
+      "n": 3,
+      "mean": 51.84395786499945,
+      "sd": 0.8963493018348203,
+      "median": 52.011945645683,
+      "iqr": 0.8844643294421388
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "cpu_overhead_pct",
+      "n": 16,
+      "mean": 77.30279999733642,
+      "sd": 0.7635093357390461,
+      "median": 77.28106566393913,
+      "iqr": 0.8729818806895366
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "memory_overhead_pct",
+      "n": 16,
+      "mean": 51.2485597379459,
+      "sd": 0.5430402855299992,
+      "median": 51.05070532300695,
+      "iqr": 0.836789007507214
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "network_overhead_pct",
+      "n": 16,
+      "mean": 102.66530983569972,
+      "sd": 1.4600405487479766,
+      "median": 102.45033489194563,
+      "iqr": 2.124503623791668
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "operational_event_volume",
+      "n": 16,
+      "mean": 51.3125,
+      "sd": 0.47871355387816905,
+      "median": 51.0,
+      "iqr": 1.0
+    },
+    {
+      "condition": "port_rotation",
+      "metric": "service_availability_impact",
+      "n": 16,
+      "mean": 0.00625,
+      "sd": 0.01343709624716425,
+      "median": 0.0,
+      "iqr": 0.0
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "exploit_success",
+      "n": 16,
+      "mean": 1.0,
+      "sd": 0.0,
+      "median": 1.0,
+      "iqr": 0.0
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "exploitation_success",
+      "n": 16,
+      "mean": 1.0,
+      "sd": 0.0,
+      "median": 1.0,
+      "iqr": 0.0
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "time_to_compromise_s",
+      "n": 16,
+      "mean": 36.875,
+      "sd": 4.031128874149275,
+      "median": 35.0,
+      "iqr": 0.0
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "time_to_enumeration_s",
+      "n": 16,
+      "mean": 25.0,
+      "sd": 0.0,
+      "median": 25.0,
+      "iqr": 0.0
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "time_to_first_valid_exploit_s",
+      "n": 16,
+      "mean": 36.875,
+      "sd": 4.031128874149275,
+      "median": 35.0,
+      "iqr": 0.0
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "recon_accuracy_f1",
+      "n": 16,
+      "mean": 0.7692307692307693,
+      "sd": 0.0,
+      "median": 0.7692307692307693,
+      "iqr": 0.0
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "attack_path_churn",
+      "n": 14,
+      "mean": 0.0,
+      "sd": 0.0,
+      "median": 0.0,
+      "iqr": 0.0
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "attempts_per_success",
+      "n": 16,
+      "mean": 1.1875,
+      "sd": 0.4031128874149275,
+      "median": 1.0,
+      "iqr": 0.0
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "latency_overhead_ms",
+      "n": 16,
+      "mean": -0.1162579959624539,
+      "sd": 0.24549942891043747,
+      "median": -0.12983381264179883,
+      "iqr": 0.42680174850790564
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "cpu_overhead_pct",
+      "n": 16,
+      "mean": 0.15127850872585946,
+      "sd": 0.5136502532388997,
+      "median": 0.06688889736716774,
+      "iqr": 0.8762839297016711
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "memory_overhead_pct",
+      "n": 16,
+      "mean": -0.10425781032351034,
+      "sd": 0.2764370925577117,
+      "median": -0.05755938346666767,
+      "iqr": 0.35663578934418183
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "network_overhead_pct",
+      "n": 16,
+      "mean": 0.03299345953469479,
+      "sd": 0.6530391439923139,
+      "median": 0.04042600494113202,
+      "iqr": 0.6720293840410863
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "operational_event_volume",
+      "n": 16,
+      "mean": 0.0,
+      "sd": 0.0,
+      "median": 0.0,
+      "iqr": 0.0
+    },
+    {
+      "condition": "static_baseline",
+      "metric": "service_availability_impact",
+      "n": 16,
+      "mean": 1.0,
+      "sd": 0.0,
+      "median": 1.0,
+      "iqr": 0.0
+    }
+  ],
+  "censoring": {
+    "ttc_censored": [
+      {
+        "condition": "port_rotation",
+        "prop_censored": 0.25,
+        "n": 16
+      },
+      {
+        "condition": "static_baseline",
+        "prop_censored": 0.0,
+        "n": 16
+      }
+    ],
+    "tten_censored": [
+      {
+        "condition": "port_rotation",
+        "prop_censored": 0.0,
+        "n": 16
+      },
+      {
+        "condition": "static_baseline",
+        "prop_censored": 0.0,
+        "n": 16
+      }
+    ]
+  },
+  "primary_outcome_variance_check": {
+    "exploitation_success": {
+      "mtd_arm_sd": 0.4472135954999579,
+      "degenerate": false,
+      "n": 16
+    },
+    "time_to_compromise_s": {
+      "mtd_arm_sd": 789.3319960574257,
+      "degenerate": false,
+      "n": 16
+    },
+    "note": "degenerate=true means the MTD arm has no variance on that primary \u2014 check mtd.rotation_phase (should be 'randomized') and that cadence_s lands a tick in the recon->exploit window; the downstream models are uninformative until it is non-degenerate."
+  },
+  "assumptions": {
+    "time_to_compromise_s": {
+      "shapiro": {
+        "port_rotation": {
+          "W": 0.54643421651592,
+          "p": 5.2721629566328615e-06,
+          "n": 16,
+          "normal": false
+        },
+        "static_baseline": {
+          "W": 0.48429350926704673,
+          "p": 1.5754910656875774e-06,
+          "n": 16,
+          "normal": false
+        }
+      },
+      "levene": {
+        "stat": 4.957468065940548,
+        "p": 0.033634335985483176,
+        "equal_variance": false
+      }
+    },
+    "time_to_enumeration_s": {
+      "shapiro": {
+        "port_rotation": {
+          "W": null,
+          "p": null,
+          "n": 16,
+          "note": "skipped"
+        },
+        "static_baseline": {
+          "W": null,
+          "p": null,
+          "n": 16,
+          "note": "skipped"
+        }
+      },
+      "levene": {
+        "stat": null,
+        "p": null,
+        "equal_variance": false
+      }
+    },
+    "repeated_measures_note": "The repeated-measures structure is modeled by mixed-effects / GEE with a random intercept (or exchangeable working correlation) for sequence, which supersedes RM-ANOVA sphericity; Mauchly / Greenhouse-Geisser are therefore not required. Time-to-event PH is checked via Schoenfeld residuals in the Cox fits."
+  },
+  "rq1": {
+    "exploit_success": {
+      "note": "no variance in outcome",
+      "sensitivity": {
+        "label": "sensitivity (per-sequence summaries; independent across sequences)",
+        "n_sequences_static": 2,
+        "n_sequences_mtd": 2,
+        "mean_static": 1.0,
+        "mean_mtd": 1.0,
+        "welch_t": {
+          "t": null,
+          "p": null,
+          "cohen_d": 0.0
+        },
+        "mann_whitney_u": {
+          "U": 2.0,
+          "p": 1.0
+        }
+      }
+    },
+    "exploitation_success": {
+      "method": "logit_glmm",
+      "terms": {
+        "is_mtd": {
+          "odds_ratio": 0.4681989426263349,
+          "ci95": [
+            0.1196381178937326,
+            1.8322776531065905
+          ],
+          "p": 0.27566480705074614
+        },
+        "attempt_index": {
+          "odds_ratio": 1.3063509866737453,
+          "ci95": [
+            0.935673545097798,
+            1.8238764036073034
+          ],
+          "p": 0.11652979205976854
+        }
+      },
+      "inference_note": "GLMM via variational Bayes (BinomialBayesMixedGLM.fit_vb); mean-field VB can underestimate fixed-effect posterior SD, so Wald CIs/p may be mildly anti-conservative. The GEE fallback (cluster-robust) corroborates borderline effects.",
+      "mtd_vs_static": {
+        "odds_ratio": 0.4681989426263349,
+        "ci95": [
+          0.1196381178937326,
+          1.8322776531065905
+        ],
+        "p": 0.27566480705074614
+      },
+      "sensitivity": {
+        "label": "sensitivity (per-sequence summaries; independent across sequences)",
+        "n_sequences_static": 2,
+        "n_sequences_mtd": 2,
+        "mean_static": 1.0,
+        "mean_mtd": 0.75,
+        "welch_t": {
+          "t": 1.0,
+          "p": 0.5000000000000001,
+          "cohen_d": 1.0
+        },
+        "mann_whitney_u": {
+          "U": 3.0,
+          "p": 0.6170750774519738
+        }
+      }
+    },
+    "time_to_compromise_s": {
+      "cox_frailty": {
+        "method": "cox_cluster_robust",
+        "hazard_ratios": {
+          "is_mtd": {
+            "hazard_ratio": 0.6295846611396424,
+            "ci95": [
+              0.2473330232160138,
+              1.6026038107985843
+            ],
+            "p": 0.33174220668254584
+          },
+          "attempt_index": {
+            "hazard_ratio": 0.9570466739463712,
+            "ci95": [
+              0.7954819327072848,
+              1.1514256935975584
+            ],
+            "p": 0.6416675096376594
+          }
+        },
+        "n_events": 28,
+        "penalizer": 0.0,
+        "proportional_hazards": {
+          "min_schoenfeld_p": 0.020852642646781532,
+          "assumption_ok": false
+        },
+        "estimand_note": "MARGINAL (population-average) HR with cluster-robust (sequence) variance; a practical stand-in for a subject-specific shared-frailty Cox (no gamma frailty in lifelines). Interpret as the marginal, not conditional, hazard ratio.",
+        "mtd_vs_static": {
+          "hazard_ratio": 0.6295846611396424,
+          "ci95": [
+            0.2473330232160138,
+            1.6026038107985843
+          ],
+          "p": 0.33174220668254584
+        }
+      },
+      "lmm_log_event_time": {
+        "terms": {
+          "is_mtd": {
+            "coef": -0.04787471468820541,
+            "p": 0.09525365325081629
+          },
+          "attempt_index": {
+            "coef": 0.009039102075608253,
+            "p": 0.13727799742971572
+          }
+        },
+        "converged": true,
+        "n_uncensored": 28
+      },
+      "sensitivity": {
+        "label": "sensitivity (per-sequence summaries; independent across sequences)",
+        "n_sequences_static": 2,
+        "n_sequences_mtd": 2,
+        "mean_static": 36.875,
+        "mean_mtd": 476.25,
+        "welch_t": {
+          "t": -0.9957497093416107,
+          "p": 0.5013552593396654,
+          "cohen_d": -0.9957497093416107
+        },
+        "mann_whitney_u": {
+          "U": 2.0,
+          "p": 1.0
+        }
+      },
+      "censored_proportion_by_condition": {
+        "port_rotation": 0.25,
+        "static_baseline": 0.0
+      }
+    },
+    "time_to_first_valid_exploit_s": {
+      "cox_frailty": {
+        "method": "cox_cluster_robust",
+        "hazard_ratios": {
+          "is_mtd": {
+            "hazard_ratio": 0.7512107355434667,
+            "ci95": [
+              0.28395846575482436,
+              1.9873243352533105
+            ],
+            "p": 0.5643937703121236
+          },
+          "attempt_index": {
+            "hazard_ratio": 0.9162135930337322,
+            "ci95": [
+              0.8087034980183871,
+              1.0380162199331742
+            ],
+            "p": 0.16941843735186285
+          }
+        },
+        "n_events": 32,
+        "penalizer": 0.0,
+        "proportional_hazards": {
+          "min_schoenfeld_p": 0.025128504401059074,
+          "assumption_ok": false
+        },
+        "estimand_note": "MARGINAL (population-average) HR with cluster-robust (sequence) variance; a practical stand-in for a subject-specific shared-frailty Cox (no gamma frailty in lifelines). Interpret as the marginal, not conditional, hazard ratio.",
+        "mtd_vs_static": {
+          "hazard_ratio": 0.7512107355434667,
+          "ci95": [
+            0.28395846575482436,
+            1.9873243352533105
+          ],
+          "p": 0.5643937703121236
+        }
+      },
+      "lmm_log_event_time": {
+        "note": "log-time LMM unavailable: Singular matrix"
+      },
+      "sensitivity": {
+        "label": "sensitivity (per-sequence summaries; independent across sequences)",
+        "n_sequences_static": 2,
+        "n_sequences_mtd": 2,
+        "mean_static": 36.875,
+        "mean_mtd": 38.125,
+        "welch_t": {
+          "t": -0.3922322702763681,
+          "p": 0.7581813641433786,
+          "cohen_d": -0.3922322702763681
+        },
+        "mann_whitney_u": {
+          "U": 2.0,
+          "p": 1.0
+        }
+      },
+      "censored_proportion_by_condition": {
+        "port_rotation": 0.0,
+        "static_baseline": 0.0
+      }
+    }
+  },
+  "rq2": {
+    "time_to_enumeration_s": {
+      "terms": {},
+      "converged": true,
+      "random_intercept_var": 0.0,
+      "marginal_r2_fixed": null,
+      "emmeans": {
+        "port_rotation": {
+          "emmean": 25.0,
+          "se": null
+        }
+      },
+      "omnibus_wald": {
+        "note": "no factor terms"
+      },
+      "pairwise_contrasts": [],
+      "pairwise_significant": [],
+      "sensitivity": {
+        "label": "sensitivity (per-sequence aggregates)",
+        "note": "insufficient sequences"
+      }
+    },
+    "recon_accuracy_f1": {
+      "note": "LMM unavailable: Singular matrix"
+    },
+    "attack_path_churn": {
+      "note": "LMM unavailable: Singular matrix"
+    },
+    "exploit_success": {
+      "note": "no variance in outcome"
+    },
+    "exploitation_success": {
+      "method": "logit_glmm",
+      "terms": {
+        "attempt_index": {
+          "odds_ratio": 1.1976340821791318,
+          "ci95": [
+            0.8526051832661675,
+            1.682287913501085
+          ],
+          "p": 0.2982262595412082
+        }
+      },
+      "inference_note": "GLMM via variational Bayes (BinomialBayesMixedGLM.fit_vb); mean-field VB can underestimate fixed-effect posterior SD, so Wald CIs/p may be mildly anti-conservative. The GEE fallback (cluster-robust) corroborates borderline effects."
+    }
+  },
+  "rq3": {
+    "time_to_enumeration_s": {
+      "converged": false,
+      "attempt_index_coef": 0.0,
+      "attempt_index_p": 1.0,
+      "interaction": {
+        "terms": {
+          "attempt_c:C(condition)[T.static_baseline]": 1.0
+        },
+        "any_significant": false
+      },
+      "random_intercept_var": 2.5644240220518003e-29,
+      "aic": null,
+      "note": "random-intercept variance near zero (boundary); fixed effects valid, random effect retained for the repeated-measures design"
+    },
+    "recon_accuracy_f1": {
+      "note": "LMM unavailable: Singular matrix"
+    },
+    "exploit_success": {
+      "note": "no variance in outcome"
+    },
+    "exploitation_success": {
+      "method": "logit_glmm",
+      "terms": {
+        "C(condition)[T.static_baseline]": {
+          "odds_ratio": 4.7519305377671985,
+          "ci95": [
+            0.2860331781521573,
+            78.94484123010523
+          ],
+          "p": 0.2770251416831764
+        },
+        "attempt_index": {
+          "odds_ratio": 1.1565681779716581,
+          "ci95": [
+            0.8248869222899372,
+            1.6216161441658958
+          ],
+          "p": 0.39891314011566337
+        },
+        "attempt_index:C(condition)[T.static_baseline]": {
+          "odds_ratio": 6.890924043232696,
+          "ci95": [
+            1.0647411394744815,
+            44.59753869662562
+          ],
+          "p": 0.04278120022366272
+        }
+      },
+      "inference_note": "GLMM via variational Bayes (BinomialBayesMixedGLM.fit_vb); mean-field VB can underestimate fixed-effect posterior SD, so Wald CIs/p may be mildly anti-conservative. The GEE fallback (cluster-robust) corroborates borderline effects.",
+      "attempt_effect": {
+        "odds_ratio": 1.1565681779716581,
+        "ci95": [
+          0.8248869222899372,
+          1.6216161441658958
+        ],
+        "p": 0.39891314011566337
+      },
+      "interaction": {
+        "terms": {
+          "attempt_index:C(condition)[T.static_baseline]": 0.04278120022366272
+        },
+        "any_significant": true
+      }
+    }
+  },
+  "rq4": {
+    "pearson": {
+      "exploitation_success": {
+        "exploitation_success": 1.0,
+        "time_to_compromise_s": -1.0,
+        "time_to_first_valid_exploit_s": -0.756,
+        "recon_accuracy_f1": 0.402,
+        "attack_path_churn": -0.394,
+        "latency_overhead_ms": -1.0,
+        "cpu_overhead_pct": -0.377,
+        "memory_overhead_pct": -0.376,
+        "network_overhead_pct": -0.374,
+        "operational_event_volume": -0.377,
+        "service_availability_impact": 0.364
+      },
+      "time_to_compromise_s": {
+        "exploitation_success": -1.0,
+        "time_to_compromise_s": 1.0,
+        "time_to_first_valid_exploit_s": 0.759,
+        "recon_accuracy_f1": -0.401,
+        "attack_path_churn": 0.393,
+        "latency_overhead_ms": 1.0,
+        "cpu_overhead_pct": 0.375,
+        "memory_overhead_pct": 0.374,
+        "network_overhead_pct": 0.373,
+        "operational_event_volume": 0.376,
+        "service_availability_impact": -0.362
+      },
+      "time_to_first_valid_exploit_s": {
+        "exploitation_success": -0.756,
+        "time_to_compromise_s": 0.759,
+        "time_to_first_valid_exploit_s": 1.0,
+        "recon_accuracy_f1": -0.157,
+        "attack_path_churn": 0.125,
+        "latency_overhead_ms": 0.712,
+        "cpu_overhead_pct": 0.124,
+        "memory_overhead_pct": 0.122,
+        "network_overhead_pct": 0.12,
+        "operational_event_volume": 0.124,
+        "service_availability_impact": -0.112
+      },
+      "recon_accuracy_f1": {
+        "exploitation_success": 0.402,
+        "time_to_compromise_s": -0.401,
+        "time_to_first_valid_exploit_s": -0.157,
+        "recon_accuracy_f1": 1.0,
+        "attack_path_churn": -0.997,
+        "latency_overhead_ms": -1.0,
+        "cpu_overhead_pct": -0.939,
+        "memory_overhead_pct": -0.94,
+        "network_overhead_pct": -0.939,
+        "operational_event_volume": -0.94,
+        "service_availability_impact": 0.938
+      },
+      "attack_path_churn": {
+        "exploitation_success": -0.394,
+        "time_to_compromise_s": 0.393,
+        "time_to_first_valid_exploit_s": 0.125,
+        "recon_accuracy_f1": -0.997,
+        "attack_path_churn": 1.0,
+        "latency_overhead_ms": 1.0,
+        "cpu_overhead_pct": 0.996,
+        "memory_overhead_pct": 0.996,
+        "network_overhead_pct": 0.996,
+        "operational_event_volume": 0.996,
+        "service_availability_impact": -0.997
+      },
+      "latency_overhead_ms": {
+        "exploitation_success": -1.0,
+        "time_to_compromise_s": 1.0,
+        "time_to_first_valid_exploit_s": 0.712,
+        "recon_accuracy_f1": -1.0,
+        "attack_path_churn": 1.0,
+        "latency_overhead_ms": 1.0,
+        "cpu_overhead_pct": 1.0,
+        "memory_overhead_pct": 1.0,
+        "network_overhead_pct": 1.0,
+        "operational_event_volume": 1.0,
+        "service_availability_impact": -1.0
+      },
+      "cpu_overhead_pct": {
+        "exploitation_success": -0.377,
+        "time_to_compromise_s": 0.375,
+        "time_to_first_valid_exploit_s": 0.124,
+        "recon_accuracy_f1": -0.939,
+        "attack_path_churn": 0.996,
+        "latency_overhead_ms": 1.0,
+        "cpu_overhead_pct": 1.0,
+        "memory_overhead_pct": 1.0,
+        "network_overhead_pct": 1.0,
+        "operational_event_volume": 1.0,
+        "service_availability_impact": -1.0
+      },
+      "memory_overhead_pct": {
+        "exploitation_success": -0.376,
+        "time_to_compromise_s": 0.374,
+        "time_to_first_valid_exploit_s": 0.122,
+        "recon_accuracy_f1": -0.94,
+        "attack_path_churn": 0.996,
+        "latency_overhead_ms": 1.0,
+        "cpu_overhead_pct": 1.0,
+        "memory_overhead_pct": 1.0,
+        "network_overhead_pct": 1.0,
+        "operational_event_volume": 1.0,
+        "service_availability_impact": -1.0
+      },
+      "network_overhead_pct": {
+        "exploitation_success": -0.374,
+        "time_to_compromise_s": 0.373,
+        "time_to_first_valid_exploit_s": 0.12,
+        "recon_accuracy_f1": -0.939,
+        "attack_path_churn": 0.996,
+        "latency_overhead_ms": 1.0,
+        "cpu_overhead_pct": 1.0,
+        "memory_overhead_pct": 1.0,
+        "network_overhead_pct": 1.0,
+        "operational_event_volume": 1.0,
+        "service_availability_impact": -1.0
+      },
+      "operational_event_volume": {
+        "exploitation_success": -0.377,
+        "time_to_compromise_s": 0.376,
+        "time_to_first_valid_exploit_s": 0.124,
+        "recon_accuracy_f1": -0.94,
+        "attack_path_churn": 0.996,
+        "latency_overhead_ms": 1.0,
+        "cpu_overhead_pct": 1.0,
+        "memory_overhead_pct": 1.0,
+        "network_overhead_pct": 1.0,
+        "operational_event_volume": 1.0,
+        "service_availability_impact": -1.0
+      },
+      "service_availability_impact": {
+        "exploitation_success": 0.364,
+        "time_to_compromise_s": -0.362,
+        "time_to_first_valid_exploit_s": -0.112,
+        "recon_accuracy_f1": 0.938,
+        "attack_path_churn": -0.997,
+        "latency_overhead_ms": -1.0,
+        "cpu_overhead_pct": -1.0,
+        "memory_overhead_pct": -1.0,
+        "network_overhead_pct": -1.0,
+        "operational_event_volume": -1.0,
+        "service_availability_impact": 1.0
+      }
+    },
+    "spearman": {
+      "exploitation_success": {
+        "exploitation_success": 1.0,
+        "time_to_compromise_s": -0.794,
+        "time_to_first_valid_exploit_s": -0.733,
+        "recon_accuracy_f1": 0.402,
+        "attack_path_churn": -0.373,
+        "latency_overhead_ms": -0.632,
+        "cpu_overhead_pct": -0.297,
+        "memory_overhead_pct": -0.246,
+        "network_overhead_pct": -0.266,
+        "operational_event_volume": -0.337,
+        "service_availability_impact": 0.159
+      },
+      "time_to_compromise_s": {
+        "exploitation_success": -0.794,
+        "time_to_compromise_s": 1.0,
+        "time_to_first_valid_exploit_s": 0.993,
+        "recon_accuracy_f1": -0.164,
+        "attack_path_churn": 0.124,
+        "latency_overhead_ms": 0.325,
+        "cpu_overhead_pct": 0.069,
+        "memory_overhead_pct": 0.032,
+        "network_overhead_pct": 0.05,
+        "operational_event_volume": 0.105,
+        "service_availability_impact": 0.051
+      },
+      "time_to_first_valid_exploit_s": {
+        "exploitation_success": -0.733,
+        "time_to_compromise_s": 0.993,
+        "time_to_first_valid_exploit_s": 1.0,
+        "recon_accuracy_f1": -0.123,
+        "attack_path_churn": 0.074,
+        "latency_overhead_ms": 0.239,
+        "cpu_overhead_pct": 0.03,
+        "memory_overhead_pct": -0.009,
+        "network_overhead_pct": 0.005,
+        "operational_event_volume": 0.063,
+        "service_availability_impact": 0.085
+      },
+      "recon_accuracy_f1": {
+        "exploitation_success": 0.402,
+        "time_to_compromise_s": -0.164,
+        "time_to_first_valid_exploit_s": -0.123,
+        "recon_accuracy_f1": 1.0,
+        "attack_path_churn": -0.984,
+        "latency_overhead_ms": -0.632,
+        "cpu_overhead_pct": -0.79,
+        "memory_overhead_pct": -0.804,
+        "network_overhead_pct": -0.81,
+        "operational_event_volume": -0.911,
+        "service_availability_impact": 0.894
+      },
+      "attack_path_churn": {
+        "exploitation_success": -0.373,
+        "time_to_compromise_s": 0.124,
+        "time_to_first_valid_exploit_s": 0.074,
+        "recon_accuracy_f1": -0.984,
+        "attack_path_churn": 1.0,
+        "latency_overhead_ms": 0.661,
+        "cpu_overhead_pct": 0.833,
+        "memory_overhead_pct": 0.837,
+        "network_overhead_pct": 0.829,
+        "operational_event_volume": 0.92,
+        "service_availability_impact": -0.952
+      },
+      "latency_overhead_ms": {
+        "exploitation_success": -0.632,
+        "time_to_compromise_s": 0.325,
+        "time_to_first_valid_exploit_s": 0.239,
+        "recon_accuracy_f1": -0.632,
+        "attack_path_churn": 0.661,
+        "latency_overhead_ms": 1.0,
+        "cpu_overhead_pct": 0.332,
+        "memory_overhead_pct": 0.277,
+        "network_overhead_pct": 0.232,
+        "operational_event_volume": 0.632,
+        "service_availability_impact": -0.632
+      },
+      "cpu_overhead_pct": {
+        "exploitation_success": -0.297,
+        "time_to_compromise_s": 0.069,
+        "time_to_first_valid_exploit_s": 0.03,
+        "recon_accuracy_f1": -0.79,
+        "attack_path_churn": 0.833,
+        "latency_overhead_ms": 0.332,
+        "cpu_overhead_pct": 1.0,
+        "memory_overhead_pct": 0.831,
+        "network_overhead_pct": 0.849,
+        "operational_event_volume": 0.905,
+        "service_availability_impact": -0.86
+      },
+      "memory_overhead_pct": {
+        "exploitation_success": -0.246,
+        "time_to_compromise_s": 0.032,
+        "time_to_first_valid_exploit_s": -0.009,
+        "recon_accuracy_f1": -0.804,
+        "attack_path_churn": 0.837,
+        "latency_overhead_ms": 0.277,
+        "cpu_overhead_pct": 0.831,
+        "memory_overhead_pct": 1.0,
+        "network_overhead_pct": 0.793,
+        "operational_event_volume": 0.912,
+        "service_availability_impact": -0.883
+      },
+      "network_overhead_pct": {
+        "exploitation_success": -0.266,
+        "time_to_compromise_s": 0.05,
+        "time_to_first_valid_exploit_s": 0.005,
+        "recon_accuracy_f1": -0.81,
+        "attack_path_churn": 0.829,
+        "latency_overhead_ms": 0.232,
+        "cpu_overhead_pct": 0.849,
+        "memory_overhead_pct": 0.793,
+        "network_overhead_pct": 1.0,
+        "operational_event_volume": 0.912,
+        "service_availability_impact": -0.869
+      },
+      "operational_event_volume": {
+        "exploitation_success": -0.337,
+        "time_to_compromise_s": 0.105,
+        "time_to_first_valid_exploit_s": 0.063,
+        "recon_accuracy_f1": -0.911,
+        "attack_path_churn": 0.92,
+        "latency_overhead_ms": 0.632,
+        "cpu_overhead_pct": 0.905,
+        "memory_overhead_pct": 0.912,
+        "network_overhead_pct": 0.912,
+        "operational_event_volume": 1.0,
+        "service_availability_impact": -0.943
+      },
+      "service_availability_impact": {
+        "exploitation_success": 0.159,
+        "time_to_compromise_s": 0.051,
+        "time_to_first_valid_exploit_s": 0.085,
+        "recon_accuracy_f1": 0.894,
+        "attack_path_churn": -0.952,
+        "latency_overhead_ms": -0.632,
+        "cpu_overhead_pct": -0.86,
+        "memory_overhead_pct": -0.883,
+        "network_overhead_pct": -0.869,
+        "operational_event_volume": -0.943,
+        "service_availability_impact": 1.0
+      }
+    },
+    "vif": {
+      "vif": {
+        "time_to_compromise_s": 346809.7278081912,
+        "time_to_first_valid_exploit_s": 29.686060835998365,
+        "recon_accuracy_f1": Infinity,
+        "attack_path_churn": Infinity,
+        "latency_overhead_ms": 8265.303018878565,
+        "cpu_overhead_pct": 4192.1096080287525,
+        "memory_overhead_pct": 7126.6157345268575,
+        "network_overhead_pct": 4015.6964900148164,
+        "operational_event_volume": Infinity,
+        "service_availability_impact": Infinity
+      },
+      "high_collinearity_gt5": [
+        "time_to_compromise_s",
+        "time_to_first_valid_exploit_s",
+        "recon_accuracy_f1",
+        "attack_path_churn",
+        "latency_overhead_ms",
+        "cpu_overhead_pct",
+        "memory_overhead_pct",
+        "network_overhead_pct",
+        "operational_event_volume",
+        "service_availability_impact"
+      ]
+    },
+    "pca": {
+      "explained_variance_ratio": [
+        0.953,
+        0.047,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "n_components_90pct": 1,
+      "loadings_top3": {
+        "PC1": {
+          "time_to_compromise_s": 0.324,
+          "time_to_first_valid_exploit_s": 0.242,
+          "recon_accuracy_f1": -0.323,
+          "attack_path_churn": 0.323,
+          "latency_overhead_ms": 0.323,
+          "cpu_overhead_pct": 0.323,
+          "memory_overhead_pct": 0.323,
+          "network_overhead_pct": 0.323,
+          "operational_event_volume": 0.323,
+          "service_availability_impact": -0.323
+        },
+        "PC2": {
+          "time_to_compromise_s": -0.072,
+          "time_to_first_valid_exploit_s": 0.97,
+          "recon_accuracy_f1": 0.079,
+          "attack_path_churn": -0.079,
+          "latency_overhead_ms": -0.093,
+          "cpu_overhead_pct": -0.08,
+          "memory_overhead_pct": -0.083,
+          "network_overhead_pct": -0.083,
+          "operational_event_volume": -0.079,
+          "service_availability_impact": 0.079
+        },
+        "PC3": {
+          "time_to_compromise_s": 0.032,
+          "time_to_first_valid_exploit_s": 0.007,
+          "recon_accuracy_f1": 0.035,
+          "attack_path_churn": -0.035,
+          "latency_overhead_ms": 0.543,
+          "cpu_overhead_pct": -0.453,
+          "memory_overhead_pct": -0.49,
+          "network_overhead_pct": 0.504,
+          "operational_event_volume": -0.035,
+          "service_availability_impact": 0.035
+        }
+      },
+      "distinct_component_metrics": [
+        "time_to_compromise_s"
+      ]
+    },
+    "regularized_selection": {
+      "time_to_compromise_s": {
+        "target": "time_to_compromise_s",
+        "method": "elastic_net_cv",
+        "alpha": 0.0019999692997935475,
+        "l1_ratio": 0.5,
+        "coefficients": {
+          "time_to_first_valid_exploit_s": 0.0091,
+          "recon_accuracy_f1": -0.092,
+          "attack_path_churn": 0.0817,
+          "latency_overhead_ms": 0.1059,
+          "cpu_overhead_pct": 0.1029,
+          "memory_overhead_pct": 0.1522,
+          "network_overhead_pct": 0.1565,
+          "operational_event_volume": 0.1709,
+          "service_availability_impact": -0.1302
+        },
+        "selected_subset": [
+          "time_to_first_valid_exploit_s",
+          "recon_accuracy_f1",
+          "attack_path_churn",
+          "latency_overhead_ms",
+          "cpu_overhead_pct",
+          "memory_overhead_pct",
+          "network_overhead_pct",
+          "operational_event_volume",
+          "service_availability_impact"
+        ]
+      },
+      "exploitation_success": {
+        "target": "exploitation_success",
+        "method": "l1_logistic_cv",
+        "coefficients": {
+          "time_to_compromise_s": -1.5172,
+          "time_to_first_valid_exploit_s": 0.0,
+          "recon_accuracy_f1": 1.5246,
+          "attack_path_churn": -0.7904,
+          "latency_overhead_ms": 0.0,
+          "cpu_overhead_pct": -2.2462,
+          "memory_overhead_pct": -1.2264,
+          "network_overhead_pct": -1.451,
+          "operational_event_volume": -0.0009,
+          "service_availability_impact": 0.0004
+        },
+        "selected_subset": [
+          "time_to_compromise_s",
+          "recon_accuracy_f1",
+          "attack_path_churn",
+          "cpu_overhead_pct",
+          "memory_overhead_pct",
+          "network_overhead_pct",
+          "operational_event_volume",
+          "service_availability_impact"
+        ]
+      }
+    },
+    "regularized_union": [
+      "attack_path_churn",
+      "cpu_overhead_pct",
+      "latency_overhead_ms",
+      "memory_overhead_pct",
+      "network_overhead_pct",
+      "operational_event_volume",
+      "recon_accuracy_f1",
+      "service_availability_impact",
+      "time_to_compromise_s",
+      "time_to_first_valid_exploit_s"
+    ],
+    "distinct_component_metrics": [
+      "time_to_compromise_s"
+    ],
+    "parsimonious_subset": [
+      "time_to_compromise_s"
+    ],
+    "parsimonious_note": "Parsimonious subset = regularized-selection survivors that also load on distinct PCA components (per ch3 RQ4). See regularized_union / distinct_component_metrics for inputs.",
+    "cronbach_overhead_composite": {
+      "alpha": 0.9999273630707313,
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "n_items": 4,
+      "n": 19,
+      "items": [
+        "latency_overhead_ms",
+        "cpu_overhead_pct",
+        "memory_overhead_pct",
+        "network_overhead_pct"
+      ],
+      "interpretation": "high internal consistency (indicators cohere -> composite justified)"
+    },
+    "cronbach_note": "Alpha applies ONLY to the operational-overhead composite; security-efficacy indicators are formative and assessed via VIF/PCA/regularized selection above."
+  },
+  "rq5": {
+    "profile_means": {
+      "single": -0.623284293399203,
+      "static": 0.6232842933992031
+    },
+    "planned_contrasts_mixed": {
+      "note": "LMM unavailable: Singular matrix"
+    },
+    "regression_group_x_overhead_mixed": {
+      "note": "LMM unavailable: Singular matrix"
+    }
+  },
+  "fdr_secondary": {
+    "rq1": {
+      "time_to_first_valid_exploit_s": {
+        "p": 0.5643937703121236,
+        "p_adj": 0.5643937703121236,
+        "reject": false
+      }
+    },
+    "rq2": {
+      "time_to_enumeration_s": {
+        "p": null,
+        "p_adj": null,
+        "reject": null
+      },
+      "recon_accuracy_f1": {
+        "p": null,
+        "p_adj": null,
+        "reject": null
+      },
+      "attack_path_churn": {
+        "p": null,
+        "p_adj": null,
+        "reject": null
+      }
+    }
+  },
+  "power": {
+    "a_priori": {
+      "continuous_ttest": {
+        "effect_size_d": 0.5,
+        "n_per_condition": 64,
+        "n_total_two_group": 128
+      },
+      "binary_two_proportion": {
+        "odds_ratio": 2.0,
+        "n_per_condition": 68
+      },
+      "binary_chi_square": {
+        "effect_size_w": 0.3,
+        "n_total": 88
+      },
+      "anova_five_group": {
+        "effect_size_f": 0.25,
+        "n_total": 196,
+        "n_per_condition": 40
+      },
+      "censored_survival": {
+        "hazard_ratio": 2.0,
+        "required_events": 66,
+        "note": "trial requirement = required_events / pilot compromise rate"
+      },
+      "per_condition_by_test": {
+        "continuous_t": 64,
+        "binary_two_proportion": 68,
+        "binary_chi_square": 44,
+        "anova_five_group": 40
+      },
+      "binding_per_condition": 68
+    },
+    "design_effect_adjustment": {
+      "outcome_for_rho": "exploitation_success",
+      "rho_basis": "within-condition ICC(1) on the binary co-primary (no censoring bias)",
+      "within_sequence_icc_rho": 0.3143,
+      "attempts_per_sequence_m": 8,
+      "design_effect": 3.2,
+      "binding_per_condition_unadjusted": 68,
+      "adjusted_trials_per_condition": 218,
+      "sequences_per_condition": 28,
+      "sequences_per_condition_with_15pct_exclusion": 33,
+      "trials_per_condition_with_inflation": 264
+    },
+    "pilot_variance": {
+      "outcome": "time_to_first_valid_exploit_s",
+      "observed_only": true,
+      "n_censored_dropped": 0,
+      "sd_static": 4.031128874149275,
+      "sd_mtd": 6.020797289396148,
+      "observed_cohen_d": -0.2439750182371333,
+      "n_per_condition_for_observed_d": 265
+    },
+    "within_sequence_icc_by_outcome": {
+      "exploitation_success": {
+        "pooled": 0.4285714285714286,
+        "within_condition": 0.3142857142857143
+      },
+      "time_to_compromise_s": {
+        "pooled": 0.42775210838140443,
+        "within_condition": 0.31427580925080967
+      },
+      "exploit_success": {
+        "pooled": 0.0,
+        "within_condition": 0.0
+      },
+      "time_to_enumeration_s": {
+        "pooled": 0.0,
+        "within_condition": 0.0
+      }
+    }
+  },
+  "survival_uptime": {
+    "kaplan_meier": {
+      "port_rotation": {
+        "n": 16,
+        "failures": 16,
+        "median_uptime_s": 0.0
+      },
+      "static_baseline": {
+        "n": 16,
+        "failures": 0,
+        "median_uptime_s": Infinity
+      }
+    },
+    "logrank": {
+      "test_statistic": 34.7215700834928,
+      "p": 3.803933931161998e-09
+    },
+    "cox": {
+      "hazard_ratios": {
+        "tech_static_baseline": 0.059067563351896134
+      },
+      "min_schoenfeld_p": 0.514099446567547,
+      "proportional_hazards_ok": true,
+      "concordance": 0.9338983050847458
+    }
+  },
+  "reliability": {
+    "estimable_offline": false,
+    "measurement_reliability": "NOT estimable from the offline pipeline: the mock attacker is deterministic and the repeatability runs re-execute a single configuration, so there is no measurement variation to partition and no independent re-measurement of the same realization to correlate. ICC(2,1) and kappa are computed in the LIVE study (R independent re-executions of each checksum-verified configuration across multiple configurations).",
+    "computational_determinism": "Separately, the parsing/correlation/metric routines are deterministic (identical inputs -> identical outputs), verified by the unit/integration tests. This is a software property, NOT reliability evidence, and is not offered as such.",
+    "live_methods": {
+      "continuous_outcomes": "ICC(2,1) via analysis.reliability.icc2(long_df, targets, raters, ratings)",
+      "binary_outcomes": "percent agreement + Cohen's kappa via analysis.reliability.cohen_kappa(a, b)"
+    },
+    "thresholds": "Koo & Li (2016): ICC >= .75 good, >= .90 excellent",
+    "n_repeatability_runs": 15
+  }
+}

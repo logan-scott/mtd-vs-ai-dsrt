@@ -1,0 +1,136 @@
+# =============================================================================
+# Standardized vulnerability profile — live-testbed roster (version-pinned)
+# =============================================================================
+# The single source of truth mapping each service's observable identity to its
+# live deployment facts (pinned version, known weakness, host) and, for genuine
+# services, the PRE-STAGED, STANDARD exploit primitive the courier invokes.
+#
+# - service_name MUST equal the observable fingerprint in testbed/profile.py so
+#   the live scan's canonical naming matches the ground-truth inventory (parity).
+# - MTD mutates only ip/port/endpoint; service_name is stable, so primitive
+#   selection stays correct across every condition.
+# - Primitives are thin wrappers around STANDARD, publicly available tooling staged on
+#   the attacker node by infra/ansible (roles/attacker); no payload is authored in this
+#   repository. The technique comes entirely from the maintained tool or the training
+#   app's own documented lesson:
+#     * dvwa    -> DVWA's documented Command Injection procedure (curl: login, security
+#                  low, inject) — obj_b RCE.
+#     * juice   -> OWASP Juice Shop's documented REST login SQLi (curl) — obj_b data access.
+#     * webgoat -> WebGoat's documented XXE lesson (curl: sign in, open the lesson, submit the
+#                  external-entity comment, read the comment list back) — obj_b data access
+#                  (/etc/passwd). Recorded reached-only before 2026-10-31 because of three
+#                  primitive defects (see the primitive's header and the docs).
+#     * struts  -> the maintained Metasploit module exploit/multi/http/struts2_content_type_ognl
+#                  (its check executes injected OGNL and reflects command output) — obj_b RCE.
+#     * vsftpd  -> the maintained Metasploit module exploit/unix/ftp/vsftpd_234_backdoor
+#                  (":)" backdoor -> root shell session, `id` -> uid=0) — obj_b root shell.
+#   metasploit-framework is pre-staged on the attacker node during the provisioning egress
+#   window (it has no egress at trial time); the tool + version is recorded per trial
+#   (tooling_versions). Since 2026-10-31 the two Metasploit primitives run their modules in
+#   the resident daemon msfd (a loopback-only service on that node) instead of starting
+#   msfconsole for every delivery. Each primitive prints ONE JSON line:
+#       {"reached_and_executed": <bool>, "unauthorized_access": <bool>}
+# - Decoys carry NO primitive: they expose no real vulnerability, so the courier
+#   can only reach them (connect probe), never gain access.
+#
+# vuln_profile_version pins this roster; bump it on any service/version change and
+# record it per trial (mirrors the vp-* tag on the offline profile).
+
+vuln_profile_version: "vp-0.2.0"
+
+services:
+  # --- Genuine intentionally-vulnerable targets (Docker, pinned digests) -------
+  - service_id: dvwa
+    service_name: http-dvwa
+    genuine: true
+    software_version: "dvwa-1.x"  # vulnerables/web-dvwa is DVWA 1.x
+    weakness: "OS command injection (DVWA Command Injection module) -> obj_b RCE"
+    host_role: targets
+    container_port: 80  # in-container port (published port is the observable one)
+    primitive:
+      name: dvwa_cmd_injection
+      argv: ["/opt/primitives/dvwa_cmd_injection.sh", "{host}", "{port}", "{path}"]
+
+  - service_id: juice
+    service_name: http-juice
+    genuine: true
+    software_version: "juice-17.1.1"
+    weakness: "SQL injection over the REST API (OWASP Juice Shop) -> obj_b data access"
+    host_role: targets
+    container_port: 3000  # in-container port (published port is the observable one)
+    primitive:
+      name: juice_sqli
+      argv: ["/opt/primitives/juice_sqli.sh", "{host}", "{port}", "{path}"]
+
+  - service_id: webgoat
+    service_name: http-webgoat
+    genuine: true
+    software_version: "webgoat-2023.8"
+    weakness: "XML external entity injection (WebGoat XXE lesson, Modern REST framework assignment) -> obj_b local file read (/etc/passwd)"
+    host_role: targets
+    container_port: 8080  # in-container port (published port is the observable one)
+    primitive:
+      name: webgoat_xxe
+      argv: ["/opt/primitives/webgoat_xxe.sh", "{host}", "{port}", "{path}"]
+
+  - service_id: struts
+    service_name: http-struts
+    genuine: true
+    software_version: "struts-2.5.10"
+    weakness: "CVE-2017-5638 (Struts2 S2-045) unauthenticated RCE -> gold-standard obj_b"
+    host_role: targets
+    container_port: 8080  # in-container port (published port is the observable one)
+    primitive:
+      name: struts_s2_045
+      argv: ["/opt/primitives/struts_s2_045.sh", "{host}", "{port}", "{path}"]
+
+  - service_id: vsftpd
+    service_name: ftp-vsftpd
+    genuine: true
+    software_version: "vsftpd-2.3.4"
+    weakness: "CVE-2011-2523 (vsftpd 2.3.4 backdoor) -> obj_b root shell"
+    host_role: targets
+    container_port: 21  # in-container port (published port is the observable one)
+    # AUXILIARY published port. The CVE-2011-2523 exploitation path spans TWO ports: the
+    # ":)" smiley in USER on the observable FTP port opens a root shell on tcp/6200, and
+    # the maintained Metasploit module reaches the shell THERE. 6200 is a property of the
+    # vulnerability, not a configurable binding, so it is FIXED: it is always published and
+    # is never rotated by port_rotation / combined_mtd_deception (rotating it would make the
+    # documented exploit unusable and corresponds to nothing a real MTD deployment can do).
+    # It is NOT observable: it stays out of ServiceConfig/ServiceTuple, so it never enters
+    # the attacker's fingerprint, recon accuracy, or attack-path churn (the backdoor
+    # listener does not even exist until a ":)" arms it). See docs/metrics_specification.md
+    # §4d. Declared HERE because render_override.py runs on the targets node with the
+    # stdlib only — it can read neither this roster nor the compose file at render time, so
+    # the fact must travel in the desired-state JSON, exactly as container_port does.
+    auxiliary_ports: [6200]
+    primitive:
+      name: vsftpd_backdoor
+      argv: ["/opt/primitives/vsftpd_backdoor.sh", "{host}", "{port}"]
+
+  # --- Decoys (present in ALL SIX conditions; no real vulnerability, no primitive) -
+  # default_profile() seeds these unconditionally and no technique removes them, so
+  # every arm — static_baseline included — presents them. Only deceptive_presentation
+  # and combined_mtd_deception rotate them; elsewhere they are STATIC deception.
+  # A deterministic custom responder presents these plausible-but-false services
+  # (fake banners/versions). The courier can only reach them; never gains access.
+  - service_id: decoy_http
+    service_name: http-admin
+    genuine: false
+    software_version: "responder-0.1.0"
+    weakness: "deceptive fake admin panel (no real vulnerability)"
+    host_role: targets
+
+  - service_id: decoy_ssh
+    service_name: ssh-gateway
+    genuine: false
+    software_version: "responder-0.1.0"
+    weakness: "deceptive fake SSH banner (no real vulnerability)"
+    host_role: targets
+
+  - service_id: decoy_ftp
+    service_name: ftp-backup
+    genuine: false
+    software_version: "responder-0.1.0"
+    weakness: "deceptive fake FTP banner (no real vulnerability)"
+    host_role: targets

@@ -1,0 +1,480 @@
+{
+  "role": "PLANNED SENSITIVITY (decided 2026-10-29, before the fast-scan check ran): estimates with 95% intervals only. It decides no hypothesis and reports no p-value.",
+  "rule_date": "2026-10-29",
+  "horizon_s": 300.0,
+  "conditions_shared": [
+    "combined_mtd_deception",
+    "endpoint_mutation",
+    "network_shuffling",
+    "port_rotation",
+    "static_baseline"
+  ],
+  "conditions_main_only": [
+    "deceptive_presentation"
+  ],
+  "conditions_fast_only": [],
+  "runs": {
+    "main": {
+      "scan": "subnet sweep",
+      "n_trials": 3840,
+      "n_sequences": 480,
+      "censored_before_horizon_left_out_of_rmst": 0
+    },
+    "fast": {
+      "scan": "targets host only",
+      "n_trials": 800,
+      "n_sequences": 100,
+      "censored_before_horizon_left_out_of_rmst": 0
+    }
+  },
+  "by_condition": {
+    "combined_mtd_deception": {
+      "n_sequences": {
+        "subnet": 80,
+        "fast": 20
+      },
+      "n_trials": {
+        "subnet": 640,
+        "fast": 160
+      },
+      "compromise_proportion": {
+        "subnet": 0.1859375,
+        "subnet_ci95": [
+          0.15625,
+          0.215625
+        ],
+        "fast": 0.90625,
+        "fast_ci95": [
+          0.8625,
+          0.95
+        ],
+        "fast_minus_subnet": 0.7203125,
+        "fast_minus_subnet_ci95": [
+          0.6671875,
+          0.7703125000000001
+        ]
+      },
+      "rmst_300s_s": {
+        "subnet": 251.87865312499997,
+        "subnet_ci95": [
+          244.26273921875,
+          259.74464523437496
+        ],
+        "fast": 34.81220624999999,
+        "fast_ci95": [
+          22.62864171875,
+          47.500082500000005
+        ],
+        "fast_minus_subnet": -217.066446875,
+        "fast_minus_subnet_ci95": [
+          -231.3263237109375,
+          -202.17956738281254
+        ]
+      }
+    },
+    "endpoint_mutation": {
+      "n_sequences": {
+        "subnet": 80,
+        "fast": 20
+      },
+      "n_trials": {
+        "subnet": 640,
+        "fast": 160
+      },
+      "compromise_proportion": {
+        "subnet": 0.1140625,
+        "subnet_ci95": [
+          0.08589843750000001,
+          0.1453125
+        ],
+        "fast": 0.85625,
+        "fast_ci95": [
+          0.8,
+          0.9125
+        ],
+        "fast_minus_subnet": 0.7421875,
+        "fast_minus_subnet_ci95": [
+          0.6796875,
+          0.8046875
+        ]
+      },
+      "rmst_300s_s": {
+        "subnet": 269.16074375,
+        "subnet_ci95": [
+          260.7409196484375,
+          276.98602957031244
+        ],
+        "fast": 48.668725,
+        "fast_ci95": [
+          32.2147159375,
+          65.40245015625
+        ],
+        "fast_minus_subnet": -220.49201875,
+        "fast_minus_subnet_ci95": [
+          -238.4444378515625,
+          -202.08329035156254
+        ]
+      }
+    },
+    "network_shuffling": {
+      "n_sequences": {
+        "subnet": 80,
+        "fast": 20
+      },
+      "n_trials": {
+        "subnet": 640,
+        "fast": 160
+      },
+      "compromise_proportion": {
+        "subnet": 0.1171875,
+        "subnet_ci95": [
+          0.0859375,
+          0.146875
+        ],
+        "fast": 0.88125,
+        "fast_ci95": [
+          0.8375,
+          0.925
+        ],
+        "fast_minus_subnet": 0.7640625,
+        "fast_minus_subnet_ci95": [
+          0.7109375,
+          0.815625
+        ]
+      },
+      "rmst_300s_s": {
+        "subnet": 267.9234734375,
+        "subnet_ci95": [
+          259.7816081640625,
+          276.5245073046875
+        ],
+        "fast": 40.98165625,
+        "fast_ci95": [
+          28.215591093750003,
+          54.01889250000001
+        ],
+        "fast_minus_subnet": -226.94181718749996,
+        "fast_minus_subnet_ci95": [
+          -241.74413105468753,
+          -211.56136367187503
+        ]
+      }
+    },
+    "port_rotation": {
+      "n_sequences": {
+        "subnet": 80,
+        "fast": 20
+      },
+      "n_trials": {
+        "subnet": 640,
+        "fast": 160
+      },
+      "compromise_proportion": {
+        "subnet": 0.0953125,
+        "subnet_ci95": [
+          0.0703125,
+          0.125
+        ],
+        "fast": 0.825,
+        "fast_ci95": [
+          0.775,
+          0.875
+        ],
+        "fast_minus_subnet": 0.7296874999999999,
+        "fast_minus_subnet_ci95": [
+          0.671875,
+          0.7859375
+        ]
+      },
+      "rmst_300s_s": {
+        "subnet": 274.0752140625,
+        "subnet_ci95": [
+          266.0101581249999,
+          280.93761074218753
+        ],
+        "fast": 58.16356875,
+        "fast_ci95": [
+          43.3590934375,
+          72.901919375
+        ],
+        "fast_minus_subnet": -215.91164531249999,
+        "fast_minus_subnet_ci95": [
+          -232.1424675390625,
+          -199.5255266796875
+        ]
+      }
+    },
+    "static_baseline": {
+      "n_sequences": {
+        "subnet": 80,
+        "fast": 20
+      },
+      "n_trials": {
+        "subnet": 640,
+        "fast": 160
+      },
+      "compromise_proportion": {
+        "subnet": 0.9671875,
+        "subnet_ci95": [
+          0.953125,
+          0.9796875
+        ],
+        "fast": 0.975,
+        "fast_ci95": [
+          0.94375,
+          1.0
+        ],
+        "fast_minus_subnet": 0.0078125,
+        "fast_minus_subnet_ci95": [
+          -0.026562500000000044,
+          0.035937499999999956
+        ]
+      },
+      "rmst_300s_s": {
+        "subnet": 42.303139062499994,
+        "subnet_ci95": [
+          38.74332523437501,
+          45.92149296874999
+        ],
+        "fast": 15.673793749999998,
+        "fast_ci95": [
+          8.726657343749999,
+          24.67385421874999
+        ],
+        "fast_minus_subnet": -26.629345312499996,
+        "fast_minus_subnet_ci95": [
+          -34.40641320312499,
+          -16.972683046874998
+        ]
+      }
+    }
+  },
+  "moving_benefit_over_static": {
+    "conditions": [
+      "combined_mtd_deception",
+      "endpoint_mutation",
+      "network_shuffling",
+      "port_rotation"
+    ],
+    "weighting": "equal weight per moving condition",
+    "by_condition": {
+      "combined_mtd_deception": {
+        "compromise_proportion": {
+          "subnet": -0.78125,
+          "subnet_ci95": [
+            -0.8125390625,
+            -0.75
+          ],
+          "fast": -0.06874999999999998,
+          "fast_ci95": [
+            -0.11875000000000002,
+            -0.018750000000000044
+          ],
+          "change_fast_minus_subnet": 0.7125,
+          "change_ci95": [
+            0.6515625,
+            0.7703515624999998
+          ]
+        },
+        "rmst_300s_s": {
+          "subnet": 209.57551406249996,
+          "subnet_ci95": [
+            201.4527085546875,
+            218.1455951171875
+          ],
+          "fast": 19.13841249999999,
+          "fast_ci95": [
+            4.533523437500002,
+            33.58043937499999
+          ],
+          "change_fast_minus_subnet": -190.43710156249998,
+          "change_ci95": [
+            -206.91826445312498,
+            -173.31510203124998
+          ]
+        }
+      },
+      "endpoint_mutation": {
+        "compromise_proportion": {
+          "subnet": -0.853125,
+          "subnet_ci95": [
+            -0.884375,
+            -0.8203125
+          ],
+          "fast": -0.11875000000000002,
+          "fast_ci95": [
+            -0.18140625000000002,
+            -0.05625000000000002
+          ],
+          "change_fast_minus_subnet": 0.734375,
+          "change_ci95": [
+            0.6640625,
+            0.8031640624999997
+          ]
+        },
+        "rmst_300s_s": {
+          "subnet": 226.8576046875,
+          "subnet_ci95": [
+            218.00740273437498,
+            235.33804113281252
+          ],
+          "fast": 32.99493125000001,
+          "fast_ci95": [
+            14.644092343749994,
+            52.08993453124995
+          ],
+          "change_fast_minus_subnet": -193.86267343749998,
+          "change_ci95": [
+            -213.6841770703125,
+            -173.2097644921875
+          ]
+        }
+      },
+      "network_shuffling": {
+        "compromise_proportion": {
+          "subnet": -0.85,
+          "subnet_ci95": [
+            -0.8828515625,
+            -0.81875
+          ],
+          "fast": -0.09375,
+          "fast_ci95": [
+            -0.14375000000000004,
+            -0.03750000000000009
+          ],
+          "change_fast_minus_subnet": 0.75625,
+          "change_ci95": [
+            0.6968749999999999,
+            0.81875
+          ]
+        },
+        "rmst_300s_s": {
+          "subnet": 225.62033437499997,
+          "subnet_ci95": [
+            216.9020858203125,
+            234.75269136718745
+          ],
+          "fast": 25.307862500000002,
+          "fast_ci95": [
+            9.815663125,
+            40.71239484374994
+          ],
+          "change_fast_minus_subnet": -200.31247187499997,
+          "change_ci95": [
+            -218.44967507812504,
+            -182.888
+          ]
+        }
+      },
+      "port_rotation": {
+        "compromise_proportion": {
+          "subnet": -0.871875,
+          "subnet_ci95": [
+            -0.9000390625,
+            -0.8390625
+          ],
+          "fast": -0.15000000000000002,
+          "fast_ci95": [
+            -0.20624999999999993,
+            -0.09375
+          ],
+          "change_fast_minus_subnet": 0.7218749999999999,
+          "change_ci95": [
+            0.6593749999999999,
+            0.784375
+          ]
+        },
+        "rmst_300s_s": {
+          "subnet": 231.77207499999997,
+          "subnet_ci95": [
+            222.76276347656244,
+            239.62161410156244
+          ],
+          "fast": 42.48977500000001,
+          "fast_ci95": [
+            25.457733125,
+            58.95886921875
+          ],
+          "change_fast_minus_subnet": -189.28229999999996,
+          "change_ci95": [
+            -207.49861597656255,
+            -171.30120964843752
+          ]
+        }
+      }
+    },
+    "compromise_proportion": {
+      "subnet": -0.8390625,
+      "subnet_ci95": [
+        -0.8585937499999999,
+        -0.81953125
+      ],
+      "fast": -0.10781249999999998,
+      "fast_ci95": [
+        -0.14218750000000002,
+        -0.0703125
+      ],
+      "change_fast_minus_subnet": 0.7312500000000001,
+      "change_ci95": [
+        0.691787109375,
+        0.7734374999999999
+      ]
+    },
+    "rmst_300s_s": {
+      "subnet": 223.45638203124997,
+      "subnet_ci95": [
+        217.9999674707031,
+        228.7740891894531
+      ],
+      "fast": 29.982745312500004,
+      "fast_ci95": [
+        18.9718651953125,
+        39.91775351562499
+      ],
+      "change_fast_minus_subnet": -193.47363671874996,
+      "change_ci95": [
+        -205.6306545507813,
+        -181.9187283886719
+      ]
+    }
+  },
+  "orientation": {
+    "compromise_proportion": "share of trials compromised (exploitation_success). A positive fast - subnet difference means more compromises under the fast scan. A benefit over static is condition - static: NEGATIVE = the moving condition lowers compromise",
+    "rmst_300s_s": "restricted mean time to compromise over [0, 300 s], seconds. A positive fast - subnet difference means the condition stays uncompromised longer under the fast scan. A benefit over static is condition - static: POSITIVE = the moving condition delays compromise"
+  },
+  "n_boot": 2000,
+  "seed": 20260722,
+  "notes": {
+    "independent_samples": "The two runs are independent samples (their sequences have their own seeds), so each run is bootstrapped separately: whole sequences resampled within each condition. An interval for a difference between the runs combines the two runs' replicates.",
+    "drift": "The runs happen back to back on the same testbed, so a difference between them also carries any drift between the runs; the main study's interleaved drift check (design_checks.interleaved_drift) shows how stable the testbed was within it.",
+    "no_tests": "No p-value is reported: with 20 sequences per condition a test has little power, and a non-significant result would read as evidence that scan length does not matter.",
+    "restricted_time": "RMST over [0, 300 s] is mean(min(T, 300)): exact here because every censored trial is censored at the trial window. A trial censored before 300 s would have no determined restricted time; it is left out of the RMST (not of the compromise proportion) and counted in runs.<run>.censored_before_horizon_left_out_of_rmst (none is expected)."
+  },
+  "provenance": {
+    "source": "cli.fastscan-compare",
+    "generated_at": "2026-11-15T04:47:16+00:00",
+    "main_dataset": "docs/results/full/trial_dataset.csv",
+    "main_dataset_sha256": "bacc23c0e80a4152aeacc1662d8b21d4843a7ddd54ddae78f2829fc5127917a9",
+    "fast_dataset": "docs/results/full_fastscan/trial_dataset.csv",
+    "fast_dataset_sha256": "1368751731d5d3278df93afaaea3c7838343aeba09bc278afeacab3aeacaa59b",
+    "runs": {
+      "main": {
+        "run_meta": "docs/results/full/run_meta.json",
+        "scan_scope": "subnet",
+        "git_commit": "6cd35e6858070b037d97a9f6dfd7a4c975d8340a",
+        "run_order": "interleaved"
+      },
+      "fast": {
+        "run_meta": "docs/results/full_fastscan/run_meta.json",
+        "scan_scope": "target_host",
+        "git_commit": "6cd35e6858070b037d97a9f6dfd7a4c975d8340a",
+        "run_order": "interleaved"
+      }
+    },
+    "scan_scope_unrecorded": []
+  },
+  "json_sanitization": {
+    "non_finite_replaced_with_null": [],
+    "note": "JSON has no literal for NaN/+-Infinity. Each path above held a non-finite float in the computed results and is written as null; 'original' records the value that was replaced."
+  }
+}

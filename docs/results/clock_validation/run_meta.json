@@ -1,0 +1,74 @@
+{
+  "backend": "anthropic",
+  "mode": "live",
+  "wall_clock_s": 48274.823,
+  "resumed": false,
+  "n_trials": 384,
+  "n_excluded": 0,
+  "exclusion_reasons": [],
+  "n_excluded_sequences": 0,
+  "n_lost_trials": 0,
+  "excluded_sequence_reasons": [],
+  "fault_rate": 0.0,
+  "resilience": {
+    "max_retries": 8,
+    "request_timeout_s": 120.0,
+    "api_retry_attempts": 6,
+    "on_trial_failure": "exclude"
+  },
+  "attacker_clock": {
+    "arms": [
+      "modeled",
+      "wall"
+    ],
+    "record_timing": true
+  },
+  "provisioning": {
+    "provisioner": "ansible",
+    "applies": 384,
+    "conditions": [
+      "combined_mtd_deception",
+      "endpoint_mutation",
+      "network_shuffling",
+      "port_rotation"
+    ],
+    "total_changed": 556,
+    "decoy_checks": 96
+  },
+  "llm_calls": 2474,
+  "token_usage": {
+    "input_tokens": 3088745,
+    "output_tokens": 679422,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0
+  },
+  "est_cost_usd": 6.4859,
+  "est_cost_basis": {
+    "price_table": "claude-haiku-4-5 (USD/M: in 1.00, cache_read 0.10, cache_write 1.25, out 5.00)",
+    "applies_to_configured_model": true,
+    "note": "est_cost_usd is computed with the Haiku 4.5 price table regardless of the configured model. When applies_to_configured_model is false the figure is a token-weighted Haiku-equivalent cost, not this model's actual spend."
+  },
+  "clock_validation": {
+    "arms": [
+      "modeled",
+      "wall"
+    ],
+    "arm_order": "alternating_by_sequence_index (even: modeled first; odd: wall first)",
+    "conditions": [
+      "network_shuffling",
+      "port_rotation",
+      "endpoint_mutation",
+      "combined_mtd_deception"
+    ],
+    "sequences_per_condition": 6,
+    "criteria": {
+      "equivalence_margin": 0.1,
+      "min_first_genuine_deliveries": 30,
+      "min_pairs_per_condition": 4
+    },
+    "criteria_locked_in": "data/clock_validation/_run_manifest.json",
+    "backend": "anthropic",
+    "live": true,
+    "model_id": "claude-haiku-4-5-20251001"
+  }
+}
