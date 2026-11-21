@@ -1,7 +1,7 @@
 # Moving target defense against an LLM-planned attacker
 
 Research instrument, testbed definitions, and data for the dissertation *Evaluating the Efficacy of
-Moving Target Defense Strategies Against AI-Generated Cyber Exploits* (Logan Scott, University of the
+Moving Target Defense Strategies Against AI-Enabled Exploitation* (Logan Scott, University of the
 Cumberlands).
 
 The study measured whether five external moving target defense (MTD) conditions (network shuffling,
@@ -23,7 +23,7 @@ inside an isolated Proxmox testbed of five intentionally vulnerable services and
 | `analysis/` | Statistical analysis for the five research questions, the power analysis, and the sensitivity checks |
 | `testbed/` | Service roster, vulnerability profile, and the deception responder |
 | `infra/` | Terraform and Ansible definitions of the isolated testbed (see `infra/README.md`) |
-| `scripts/` | Deployment, image pinning, and benchmark staging |
+| `scripts/` | Deployment, image pinning, benchmark staging, and the supplementary checks |
 | `docs/results/` | The study's data |
 
 ## Data
@@ -52,6 +52,15 @@ python3.13 -m venv .venv-analysis
 .venv-analysis/bin/python cli.py analyze --dataset docs/results/full/trial_dataset.csv --reconfig-bench docs/results/benchmark/reconfig_cost.csv --out data/full_analysis_report.json
 .venv-analysis/bin/python cli.py analyze --dataset docs/results/full_fastscan/trial_dataset.csv --reconfig-bench docs/results/benchmark/reconfig_cost.csv --out data/full_fastscan_analysis_report.json
 .venv-analysis/bin/python cli.py fastscan-compare --main docs/results/full/trial_dataset.csv --fast docs/results/full_fastscan/trial_dataset.csv --out data/fastscan_comparison.json
+```
+
+A few values in the dissertation come from the main study's data but are not in the analysis
+report: the treatment-delivery checks, the replies that carried no action, the exploratory
+observations reported with the third research question, and the cross-validation folds of the
+fourth research question's regularized selection. To print them:
+
+```bash
+.venv-analysis/bin/python scripts/supplementary_checks.py
 ```
 
 ## Collecting data
